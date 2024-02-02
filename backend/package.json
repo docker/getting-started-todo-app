@@ -1,0 +1,34 @@
+{
+  "name": "101-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "format": "prettier -l --write \"**/*.js\"",
+    "format-check": "prettier --check \"**/*.js\"",
+    "test": "jest",
+    "dev": "yarn install && nodemon src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mysql2": "^3.9.1",
+    "sqlite3": "^5.1.7",
+    "uuid": "^9.0.1",
+    "wait-port": "^1.1.0"
+  },
+  "resolutions": {
+    "ansi-regex": "5.0.1"
+  },
+  "prettier": {
+    "trailingComma": "all",
+    "tabWidth": 4,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": true
+  },
+  "devDependencies": {
+    "jest": "^29.3.1",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.7.1"
+  }
+}
