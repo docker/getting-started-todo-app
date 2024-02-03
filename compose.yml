@@ -144,7 +144,7 @@ services:
   # to this service's port 80.
   ###################################################
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin
+    image: phpmyadmin
     environment:
       PMA_HOST: mysql
       PMA_USER: root
