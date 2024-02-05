@@ -7,6 +7,8 @@ be a well-documented to ensure anyone can come in and easily learn.
 
 ## Application architecture
 
+![image](https://github.com/docker/getting-started-todo-app/assets/313480/c128b8e4-366f-4b6f-ad73-08e6652b7c4d)
+
 
 This sample application is a simple React frontend that receives data from a
 Node.js backend. 
