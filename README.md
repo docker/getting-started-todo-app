@@ -7,6 +7,9 @@ be a well-documented to ensure anyone can come in and easily learn.
 
 ## Application architecture
 
+<img width="823" alt="arch-todolist" src="https://github.com/ajeetraina/getting-started-todo-app/assets/313480/b540f3a6-8f78-4367-aa8c-df2c0092b222">
+
+
 
 This sample application is a simple React frontend that receives data from a
 Node.js backend. 
