@@ -1,29 +1,38 @@
-name: CI/CD Pipeline
+name: ci
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Login to Docker Hub (if needed)
-        uses: docker/login-action@v2
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_PAT }}
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v3
+          password: ${{ secrets.DOCKERHUB_PAT }}
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      -
+        name: Build and test
+        uses: docker/build-push-action@v5
         with:
+          context: .
+          target: test
+          load: true
+      -
+        name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
           push: true
-          tags: ajeetraina/node-app:1.0
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to server (replace with your deployment steps)
-        # Here, you'd add steps to deploy your image to your server,
-        # e.g., using SSH, Kubernetes, etc.
+          target: prod
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }}:latest
