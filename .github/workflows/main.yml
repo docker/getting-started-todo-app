@@ -21,18 +21,10 @@ jobs:
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      -
-        name: Build and test
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          target: test
-          load: true
-      -
+      - 
         name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          target: prod
           tags: ${{ secrets.DOCKER_USER }}/${{ github.event.repository.name }}:latest
