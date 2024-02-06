@@ -35,7 +35,7 @@ export function AddItemForm({ onNewItem }) {
                     onChange={(e) => setNewItem(e.target.value)}
                     type="text"
                     placeholder="New Item"
-                    aria-describedby="basic-addon1"
+                    aria-label="New item"
                 />
                 <Button
                     type="submit"
