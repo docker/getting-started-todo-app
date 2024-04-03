@@ -31,7 +31,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "prettier": "^3.2.4",
-    "vite": "^5.0.8"
+    "vite": "^5.0.13"
   },
   "prettier": {
     "trailingComma": "all",
