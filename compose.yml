@@ -50,10 +50,11 @@ services:
   # 
   # This service is the Node.js server that provides the API for the app.
   # When the container starts, it will use the image that results
-  # from building the Dockerfile, targeting the dev stage.
+  # from building the Dockerfile, targeting the backend-dev stage.
   #
-  # The code is mounted into the container, allowing the backend to be 
-  # automatically reloaded when code changes are made (thanks to nodemon).
+  # The Compose Watch configuration is used to automatically sync the code
+  # from the host machine to the container. This allows the server to be
+  # automatically reloaded when code changes are made.
   #
   # The environment variables configure the application to connect to the
   # database, which is also configured in this Compose file. We obviously
@@ -67,14 +68,19 @@ services:
   backend:
     build:
       context: ./
-      target: dev
-    volumes:
-      - ./backend:/usr/local/app
+      target: backend-dev
     environment:
       MYSQL_HOST: mysql
       MYSQL_USER: root
       MYSQL_PASSWORD: secret
       MYSQL_DB: todos
+    develop:
+      watch:
+        - path: ./backend/src
+          action: sync
+          target: /usr/local/app/src
+        - path: ./backend/package.json
+          action: rebuild
     labels:
       traefik.http.routers.backend.rule: Host(`localhost`) && PathPrefix(`/api`)
       traefik.http.services.backend.loadbalancer.server.port: 3000
@@ -86,8 +92,9 @@ services:
   # When the container starts, it will use the image that results from building
   # the Dockerfile, targeting the dev stage.
   #
-  # The code is mounted into the container, allowing the client to be automatically
-  # reloaded when code changes are made (thanks to vite).
+  # The Compose Watch configuration is used to automatically sync the code from
+  # the host machine to the container. This allows the client to be automatically
+  # reloaded when code changes are made.
   # 
   # The labels are used to configure Traefik (the reverse proxy) with the 
   # appropriate routing rules. In this case, all requests to localhost will be
@@ -96,9 +103,14 @@ services:
   client:
     build:
       context: ./
-      target: dev
-    volumes:
-      - ./client:/usr/local/app
+      target: client-dev
+    develop:
+      watch:
+        - path: ./client/src
+          action: sync
+          target: /usr/local/app/src
+        - path: ./client/package.json
+          action: rebuild
     labels:
       traefik.http.routers.client.rule: Host(`localhost`)
       traefik.http.services.client.loadbalancer.server.port: 5173

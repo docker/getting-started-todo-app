@@ -6,7 +6,7 @@
     "format": "prettier -l --write \"**/*.js\"",
     "format-check": "prettier --check \"**/*.js\"",
     "test": "jest",
-    "dev": "yarn install && nodemon src/index.js"
+    "dev": "nodemon src/index.js"
   },
   "dependencies": {
     "express": "^4.18.2",

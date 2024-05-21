@@ -7,17 +7,29 @@
 FROM node:20 AS base
 WORKDIR /usr/local/app
 
+################## CLIENT STAGES ##################
+
 ###################################################
-# Stage: dev
+# Stage: client-base
 #
-# This stage is used for local development. It is expected that the files
-# are mounted into the container at runtime, hence there are no COPY
-# statements. The default CMD will install the yarn dependencies and then
-# start the development server.
-#
-# This stage is the specified in the compose.yaml file (see the target field).
+# This stage is used as the base for the client-dev and client-build stages,
+# since there are common steps needed for each.
 ###################################################
-FROM base AS dev
+FROM base AS client-base
+COPY client/package.json client/yarn.lock ./
+RUN --mount=type=cache,id=yarn,target=/usr/local/share/.cache/yarn \
+    yarn install
+COPY client/.eslintrc.cjs client/index.html client/vite.config.js ./
+COPY client/public ./public
+COPY client/src ./src
+
+###################################################
+# Stage: client-dev
+# 
+# This stage is used for development of the client application. It sets 
+# the default command to start the Vite development server.
+###################################################
+FROM client-base AS client-dev
 CMD ["yarn", "dev"]
 
 ###################################################
@@ -25,18 +37,30 @@ CMD ["yarn", "dev"]
 #
 # This stage builds the client application, producing static HTML, CSS, and
 # JS files that can be served by the backend.
-#
-# This build seeks to optimize the build cache as much as possible by
-# installing the dependencies before copying in the main source code.
 ###################################################
-FROM base AS client-build
-COPY client/package.json client/yarn.lock ./
-RUN --mount=type=cache,id=yarn,target=/usr/local/share/.cache/yarn \
-    yarn install
-COPY client/.eslintrc.cjs client/index.html client/vite.config.js ./
-COPY client/public ./public
-COPY client/src ./src
+FROM client-base AS client-build
 RUN yarn build
+
+
+
+
+###################################################
+################  BACKEND STAGES  #################
+###################################################
+
+###################################################
+# Stage: backend-base
+#
+# This stage is used as the base for the backend-dev and test stages, since
+# there are common steps needed for each.
+###################################################
+FROM base AS backend-dev
+COPY backend/package.json backend/yarn.lock ./
+RUN --mount=type=cache,id=yarn,target=/usr/local/share/.cache/yarn \
+    yarn install --frozen-lockfile
+COPY backend/spec ./spec
+COPY backend/src ./src
+CMD ["yarn", "dev"]
 
 ###################################################
 # Stage: test
@@ -45,12 +69,7 @@ RUN yarn build
 # stage to allow the final image to not have the test dependencies or test
 # cases.
 ###################################################
-FROM base AS test
-COPY backend/package.json backend/yarn.lock ./
-RUN --mount=type=cache,id=yarn,target=/usr/local/share/.cache/yarn \
-    yarn install --frozen-lockfile
-COPY backend/spec ./spec
-COPY backend/src ./src
+FROM backend-dev AS test
 RUN yarn test
 
 ###################################################
