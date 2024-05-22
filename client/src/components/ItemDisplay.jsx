@@ -32,7 +32,7 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
     return (
         <Container fluid className={`item ${item.completed && 'completed'}`}>
             <Row>
-                <Col xs={1} className="text-center">
+                <Col xs={2} className="text-center">
                     <Button
                         className="toggles"
                         size="sm"
@@ -54,10 +54,10 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
                         />
                     </Button>
                 </Col>
-                <Col xs={10} className="name">
+                <Col xs={8} className="name">
                     {item.name}
                 </Col>
-                <Col xs={1} className="text-center remove">
+                <Col xs={2} className="text-center remove">
                     <Button
                         size="sm"
                         variant="link"
