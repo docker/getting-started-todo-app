@@ -17,8 +17,7 @@ WORKDIR /usr/local/app
 ###################################################
 FROM base AS client-base
 COPY client/package.json client/yarn.lock ./
-RUN --mount=type=cache,id=yarn,target=/usr/local/share/.cache/yarn \
-    yarn install
+RUN yarn install --production --ignore-engines
 COPY client/.eslintrc.cjs client/index.html client/vite.config.js ./
 COPY client/public ./public
 COPY client/src ./src
