@@ -58,7 +58,7 @@ services:
   #
   # The environment variables configure the application to connect to the
   # database, which is also configured in this Compose file. We obviously
-  # wouldn't hard-code these values in a non-production environment. But, in
+  # wouldn't hard-code these values in a production environment. But, in
   # dev, these values are fine.
   #
   # Finally, the labels are used to configure Traefik (the reverse proxy) with
