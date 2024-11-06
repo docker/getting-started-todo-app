@@ -1,0 +1,154 @@
+name: Security Analysis
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  ansible-lint:
+    name: Ansible Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+      - name: Run ansible-lint
+        uses: ansible/ansible-lint@main
+        with:
+          working_directory: ./ansible
+  
+  terraform-lint:
+    name: Terraform Lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./terraform
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: v0.52.0
+      - name: Show version
+        run: tflint --version
+      - name: Init TFLint
+        run: tflint --init
+      - name: Run TFLint
+        run: tflint -f compact
+
+  terraform-sec:
+    name: Terraform Security
+    runs-on: ubuntu-latest
+    needs: 
+      - terraform-lint
+    steps:
+      - name : Check out Git Repository
+        uses: actions/checkout@v4
+      - name: Run Tfsec
+        uses: aquasecurity/tfsec-action@v1.0.0
+        # with:
+        #   additional_args: --exclude google-compute-no-public-ip
+  
+  sonarcloud:
+    name: SonarCloud
+    runs-on: ubuntu-latest
+    needs:
+      - ansible-lint
+      - terraform-lint
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+    environment: production
+    needs: 
+      - ansible-lint
+      - terraform-lint
+      - sonarcloud
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./terraform
+    outputs:
+      instance_nat_ip: ${{ steps.instance_inventory.outputs.instance_nat_ip }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup SSH 
+        shell: bash
+        run: |
+          eval `ssh-agent -s`
+          mkdir -p /home/runner/.ssh/
+          touch /home/runner/.ssh/ecdsa_ansible.pub
+          echo -e "${{ secrets.ANSIBLE_SSH_PUB }}" > /home/runner/.ssh/ecdsa_ansible.pub
+          chmod 644 /home/runner/.ssh/ecdsa_ansible.pub
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: Terraform Init
+        run: terraform init
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
+      - name: Terraform Validate
+        run: terraform validate
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
+      - name: Terraform Plan
+        run: terraform plan -input=false
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }}
+          TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
+      - name: Terraform Apply
+        run: terraform apply -auto-approve -input=false
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+          TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
+      - name: Terraform Output
+        id: instance_inventory
+        run: echo "instance_nat_ip=$(terraform output instance_nat_ip)" >> "$GITHUB_OUTPUT"
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GOOGLE_CREDENTIALS }} 
+          TF_VAR_google_project_number: ${{ secrets.GOOGLE_PROJECT_NUMBER }}
+
+  ansible:
+    name: Ansible
+    runs-on: ubuntu-latest
+    environment: production
+    needs: 
+      - terraform
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./ansible
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup SSH 
+        shell: bash
+        run: |
+          eval `ssh-agent -s`
+          mkdir -p /home/runner/.ssh/
+          touch /home/runner/.ssh/ecdsa_ansible
+          echo -e "${{ secrets.ANSIBLE_SSH }}" > /home/runner/.ssh/ecdsa_ansible
+          chmod 700 /home/runner/.ssh/ecdsa_ansible
+      - name: Create Ansible Inventory
+        run: |
+          echo "lab-sast ansible_port=22 ansible_host=${INSTANCE_NAT_IP} ansible_user=ansible ansible_ssh_private_key_file=/home/runner/.ssh/ecdsa_ansible" >> ./inventory.yml
+          cat ./inventory.yml
+        env:
+          INSTANCE_NAT_IP: ${{ needs.terraform.outputs.instance_nat_ip }}
+      - name: Run Ansible Playbook 
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: False
+        run: |
+          ansible-playbook -i ./inventory.yml main.yml
