@@ -1,9 +1,9 @@
 ###################################################
 # This Compose file provides the development environment for the todo app.
-# 
+#
 # Seeing the final version of the application bundles the frontend with the
 # backend, we are able to "simulate" that by using a proxy to route requests
-# to the appropriate service. All requests to /api will be routed to the 
+# to the appropriate service. All requests to /api will be routed to the
 # backend while all other requests will be sent to the client service. While
 # there is some overlap in the routing rules, the proxy determines the service
 # based on the most specific rule.
@@ -19,15 +19,14 @@
 # For each service, a separate container will be launched.
 ###################################################
 services:
-
   ###################################################
   # Service: proxy
   #
   # This service is a reverse proxy that will route requests to the appropriate
-  # service. Think of it like a HTTP router or a load balancer. It simply 
-  # forwards requests and allows us to simulate the final version of the 
-  # application where the frontend and backend are bundled together. We can 
-  # also use it to route requests to phpMyAdmin, which won't be accessible at 
+  # service. Think of it like a HTTP router or a load balancer. It simply
+  # forwards requests and allows us to simulate the final version of the
+  # application where the frontend and backend are bundled together. We can
+  # also use it to route requests to phpMyAdmin, which won't be accessible at
   # localhost, but at db.localhost.
   #
   # The image for this service comes directly from Docker Hub and is a Docker
@@ -47,7 +46,7 @@ services:
 
   ###################################################
   # Service: backend
-  # 
+  #
   # This service is the Node.js server that provides the API for the app.
   # When the container starts, it will use the image that results
   # from building the Dockerfile, targeting the backend-dev stage.
@@ -63,9 +62,11 @@ services:
   #
   # Finally, the labels are used to configure Traefik (the reverse proxy) with
   # the appropriate routing rules. In this case, all requests to localhost/api/*
-  # will be forwarded to this service's port 3000. 
+  # will be forwarded to this service's port 3000.
   ###################################################
   backend:
+    depends_on:
+      - mysql
     build:
       context: ./
       target: backend-dev
@@ -95,8 +96,8 @@ services:
   # The Compose Watch configuration is used to automatically sync the code from
   # the host machine to the container. This allows the client to be automatically
   # reloaded when code changes are made.
-  # 
-  # The labels are used to configure Traefik (the reverse proxy) with the 
+  #
+  # The labels are used to configure Traefik (the reverse proxy) with the
   # appropriate routing rules. In this case, all requests to localhost will be
   # forwarded to this service's port 5173.
   ###################################################
@@ -115,15 +116,14 @@ services:
       traefik.http.routers.client.rule: Host(`localhost`)
       traefik.http.services.client.loadbalancer.server.port: 5173
 
-
   ###################################################
   # Service: mysql
   #
   # The MySQL service is used to provide the database for the application.
-  # The image for this service comes directly from Docker Hub and is a Docker 
+  # The image for this service comes directly from Docker Hub and is a Docker
   # Official Image.
-  
-  # The data is persisted in a volume named todo-mysql-data. Using a volume 
+
+  # The data is persisted in a volume named todo-mysql-data. Using a volume
   # allows us to take down the services without losing the data. When we start
   # the services again, the data will still be there (assuming we didn't delete
   # the volume, of course!).
@@ -136,7 +136,7 @@ services:
     image: mysql:8.0
     volumes:
       - todo-mysql-data:/var/lib/mysql
-    environment: 
+    environment:
       MYSQL_ROOT_PASSWORD: secret
       MYSQL_DATABASE: todos
 
@@ -144,10 +144,10 @@ services:
   # Service: phpmyadmin
   #
   # This service provides a web interface to the MySQL database. It's useful
-  # for debugging and troubleshooting data, schemas, and more. The image for 
+  # for debugging and troubleshooting data, schemas, and more. The image for
   # this service comes directly from Docker Hub and is a Docker Official Image.
   #
-  # The environment variables configure the connection to the database and 
+  # The environment variables configure the connection to the database and
   # provide the default credentials, letting us immediately open the interface
   # without needing to log in.
   #
