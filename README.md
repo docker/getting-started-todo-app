@@ -3,7 +3,7 @@
 This project provides a sample todo list application. It demonstrates all of
 the current Docker best practices, ranging from the Compose file, to the
 Dockerfile, to CI (using GitHub Actions), and running tests. It's intended to 
-be a well-documented to ensure anyone can come in and easily learn.
+be well documented to ensure anyone can come in and easily learn.
 
 ## Application architecture
 
