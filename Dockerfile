@@ -56,7 +56,7 @@ RUN yarn build
 ###################################################
 FROM base AS backend-dev
 COPY backend/package.json backend/yarn.lock ./
-RUN --mount=type=cache,id=yarn,target=/usr/local/share/.cache/yarn \
+RUN --mount=type=cache,id=yarn,target=/usr/local/app/.cache/yarn \
     yarn install --frozen-lockfile
 COPY backend/spec ./spec
 COPY backend/src ./src
@@ -84,7 +84,7 @@ RUN yarn test
 FROM base AS final
 ENV NODE_ENV=production
 COPY --from=test /usr/local/app/package.json /usr/local/app/yarn.lock ./
-RUN --mount=type=cache,id=yarn,target=/usr/local/share/.cache/yarn \
+RUN --mount=type=cache,id=yarn,target=/usr/local/app/.cache/yarn \
     yarn install --production --frozen-lockfile
 COPY backend/src ./src
 COPY --from=client-build /usr/local/app/dist ./src/static

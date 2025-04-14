@@ -74,13 +74,10 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: secret
       MYSQL_DB: todos
-    develop:
-      watch:
-        - path: ./backend/src
-          action: sync
-          target: /usr/local/app/src
-        - path: ./backend/package.json
-          action: rebuild
+  
+    volumes:
+      - ./backend:/usr/local/app
+      - ./backend/package.json:/usr/local/app/package.json
     labels:
       traefik.http.routers.backend.rule: Host(`localhost`) && PathPrefix(`/api`)
       traefik.http.services.backend.loadbalancer.server.port: 3000
@@ -104,13 +101,9 @@ services:
     build:
       context: ./
       target: client-dev
-    develop:
-      watch:
-        - path: ./client/src
-          action: sync
-          target: /usr/local/app/src
-        - path: ./client/package.json
-          action: rebuild
+    volumes:
+      - ./client:/usr/local/app/src
+      - ./client/package.json:/usr/local/app/package.json
     labels:
       traefik.http.routers.client.rule: Host(`localhost`)
       traefik.http.services.client.loadbalancer.server.port: 5173
