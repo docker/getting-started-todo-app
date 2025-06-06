@@ -3,7 +3,7 @@
 This project provides a sample todo list application. It demonstrates all of
 the current Docker best practices, ranging from the Compose file, to the
 Dockerfile, to CI (using GitHub Actions), and running tests. It's intended to 
-be a well-documented to ensure anyone can come in and easily learn.
+be well-documented to ensure anyone can come in and easily learn.
 
 ## Application architecture
 
@@ -44,7 +44,7 @@ Any changes made to either the backend or frontend should be seen immediately
 without needing to rebuild or restart the containers.
 
 To help with the database, the development stack also includes phpMyAdmin, which
-can be access at [http://db.localhost](http://db.localhost) (most browsers will 
+can be accessed at [http://db.localhost](http://db.localhost) (most browsers will 
 resolve `*.localhost` correctly, so no hosts file changes should be required).
 
 ### Tearing it down
