@@ -16,8 +16,8 @@ WORKDIR /usr/local/app
 # since there are common steps needed for each.
 ###################################################
 FROM base AS client-base
-COPY client/package.json client/yarn.lock ./
-RUN yarn install
+COPY client/package.json client/package-lock.json ./
+RUN npm install
 COPY client/.eslintrc.cjs client/index.html client/vite.config.js ./
 COPY client/public ./public
 COPY client/src ./src
@@ -29,7 +29,7 @@ COPY client/src ./src
 # the default command to start the Vite development server.
 ###################################################
 FROM client-base AS client-dev
-CMD ["yarn", "dev"]
+CMD ["npm", "run", "dev"]
 
 ###################################################
 # Stage: client-build
@@ -38,7 +38,7 @@ CMD ["yarn", "dev"]
 # JS files that can be served by the backend.
 ###################################################
 FROM client-base AS client-build
-RUN yarn build
+RUN npm run build
 
 
 
@@ -54,11 +54,11 @@ RUN yarn build
 # there are common steps needed for each.
 ###################################################
 FROM base AS backend-dev
-COPY backend/package.json backend/yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY backend/package.json backend/package-lock.json ./
+RUN npm install
 COPY backend/spec ./spec
 COPY backend/src ./src
-CMD ["yarn", "dev"]
+CMD ["npm", "run", "dev"]
 
 ###################################################
 # Stage: test
@@ -68,7 +68,7 @@ CMD ["yarn", "dev"]
 # cases.
 ###################################################
 FROM backend-dev AS test
-RUN yarn test
+RUN npm run test
 
 ###################################################
 # Stage: final
@@ -76,14 +76,14 @@ RUN yarn test
 # This stage is intended to be the final "production" image. It sets up the
 # backend and copies the built client application from the client-build stage.
 #
-# It pulls the package.json and yarn.lock from the test stage to ensure that
+# It pulls the package.json and package-lock.json from the test stage to ensure that
 # the tests run (without this, the test stage would simply be skipped).
 ###################################################
 FROM base AS final
 ENV NODE_ENV=production
-COPY --from=test /usr/local/app/package.json /usr/local/app/yarn.lock ./
-RUN yarn install --production --frozen-lockfile && \
-    yarn cache clean --force
+COPY --from=test /usr/local/app/package.json /usr/local/app/package-lock.json ./
+RUN npm ci --production && \
+    npm cache clean --force
 COPY backend/src ./src
 COPY --from=client-build /usr/local/app/dist ./src/static
 EXPOSE 3000
