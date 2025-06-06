@@ -74,6 +74,9 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: secret
       MYSQL_DB: todos
+    depends_on:
+      mysql:
+        condition: service_healthy
     develop:
       watch:
         - path: ./backend/src
@@ -139,6 +142,11 @@ services:
     environment: 
       MYSQL_ROOT_PASSWORD: secret
       MYSQL_DATABASE: todos
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   ###################################################
   # Service: phpmyadmin
