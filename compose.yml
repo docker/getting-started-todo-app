@@ -41,7 +41,7 @@ services:
     image: traefik:v2.11
     command: --providers.docker
     ports:
-      - 80:80
+      - 9000:80
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
 
@@ -84,6 +84,8 @@ services:
     labels:
       traefik.http.routers.backend.rule: Host(`localhost`) && PathPrefix(`/api`)
       traefik.http.services.backend.loadbalancer.server.port: 3000
+    depends_on:
+      - mysql
 
   ###################################################
   # Service: client
@@ -164,6 +166,8 @@ services:
     labels:
       traefik.http.routers.phpmyadmin.rule: Host(`db.localhost`)
       traefik.http.services.phpmyadmin.loadbalancer.server.port: 80
+    depends_on:
+      - mysql
 
 ###################################################
 # Volumes
