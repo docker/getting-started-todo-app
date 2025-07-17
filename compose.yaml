@@ -38,7 +38,7 @@ services:
   # We also expose port 80 to connect to the proxy from the host machine.
   ###################################################
   proxy:
-    image: traefik:v2.11
+    image: traefik:v3.4
     command: --providers.docker
     ports:
       - 80:80
@@ -74,6 +74,9 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: secret
       MYSQL_DB: todos
+    depends_on:
+      mysql:
+        condition: service_healthy
     develop:
       watch:
         - path: ./backend/src
@@ -133,12 +136,17 @@ services:
   # ok to hard-code them here.
   ###################################################
   mysql:
-    image: mysql:8.0
+    image: mysql:9.3
     volumes:
       - todo-mysql-data:/var/lib/mysql
     environment: 
       MYSQL_ROOT_PASSWORD: secret
       MYSQL_DATABASE: todos
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   ###################################################
   # Service: phpmyadmin

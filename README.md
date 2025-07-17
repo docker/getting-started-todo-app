@@ -31,7 +31,7 @@ commands:
 ```
 git clone https://github.com/docker/getting-started-todo-app
 cd getting-started-todo-app
-docker compose up -d
+docker compose up --watch
 ```
 
 You'll see several container images get downloaded from Docker Hub and, after a

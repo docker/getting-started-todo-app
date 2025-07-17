@@ -9,10 +9,10 @@
     "dev": "nodemon src/index.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "mysql2": "^3.9.1",
+    "express": "^5.1.0",
+    "mysql2": "^3.14.1",
     "sqlite3": "^5.1.7",
-    "uuid": "^9.0.1",
+    "uuid": "^11.1.0",
     "wait-port": "^1.1.0"
   },
   "resolutions": {
