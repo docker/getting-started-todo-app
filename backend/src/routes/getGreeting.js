@@ -1,4 +1,4 @@
-const GREETING = 'Hello world!'[
+const GREETING = [
     "Welcome"
     "All hands on deck!"
     "Charting the course ahead!",
