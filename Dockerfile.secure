@@ -1,7 +1,11 @@
 ###################################################
 # Secure Dockerfile with Supply Chain Attestations
 # 
-# This version skips tests to focus on supply chain compliance
+# This Dockerfile addresses Docker Scout security findings:
+# - Creates non-root user for security
+# - Uses better-sqlite3 (no Python compilation needed)
+# - Implements security best practices with SBOM and provenance
+# - Based on working original Dockerfile with security improvements
 ###################################################
 
 FROM node:22 AS base
