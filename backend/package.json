@@ -9,8 +9,10 @@
     "dev": "nodemon src/index.js"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "better-sqlite3": "^12.2.0",
     "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.14.1",
     "uuid": "^11.1.0",
     "wait-port": "^1.1.0"

@@ -2,14 +2,25 @@ import { useCallback, useEffect, useState } from 'react';
 import { AddItemForm } from './AddNewItemForm';
 import { ItemDisplay } from './ItemDisplay';
 import { TodoStats } from './TodoStats';
+import { apiCall } from '../utils/api';
 
 export function TodoListCard() {
     const [items, setItems] = useState(null);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        fetch('/api/items')
-            .then((r) => r.json())
-            .then(setItems);
+        const fetchItems = async () => {
+            try {
+                const response = await apiCall('/api/items');
+                const data = await response.json();
+                setItems(data);
+            } catch (err) {
+                console.error('Error fetching items:', err);
+                setError('Failed to load items');
+            }
+        };
+
+        fetchItems();
     }, []);
 
     const onNewItem = useCallback(

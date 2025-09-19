@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
             updated_at: now,
         };
 
-        await db.storeItem(item);
+        await db.storeItemForUser(item, req.user.id);
         
         // Get the stored item to return with proper timestamp formatting
         const storedItem = await db.getItem(item.id);

@@ -6,6 +6,8 @@ const getItems = require('./routes/getItems');
 const addItem = require('./routes/addItem');
 const updateItem = require('./routes/updateItem');
 const deleteItem = require('./routes/deleteItem');
+const { register, login } = require('./routes/auth');
+const { authenticateToken } = require('./middleware/auth');
 
 app.use(express.json());
 app.use(express.static(__dirname + '/static'));
@@ -15,11 +17,16 @@ app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Public routes
 app.get('/api/greeting', getGreeting);
-app.get('/api/items', getItems);
-app.post('/api/items', addItem);
-app.put('/api/items/:id', updateItem);
-app.delete('/api/items/:id', deleteItem);
+app.post('/api/auth/register', register);
+app.post('/api/auth/login', login);
+
+// Protected routes (require authentication)
+app.get('/api/items', authenticateToken, getItems);
+app.post('/api/items', authenticateToken, addItem);
+app.put('/api/items/:id', authenticateToken, updateItem);
+app.delete('/api/items/:id', authenticateToken, deleteItem);
 
 db.init()
     .then(() => {

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 
-export function Greeting() {
+export function Greeting({ userName }) {
     const [greeting, setGreeting] = useState(null);
 
     useEffect(() => {
@@ -11,5 +12,13 @@ export function Greeting() {
 
     if (!greeting) return null;
 
-    return <h1 className="text-center mb-5">{greeting}</h1>;
+    const personalizedGreeting = userName 
+        ? `${greeting}, ${userName}!` 
+        : greeting;
+
+    return <h1 className="text-center mb-5">{personalizedGreeting}</h1>;
 }
+
+Greeting.propTypes = {
+    userName: PropTypes.string,
+};

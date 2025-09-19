@@ -38,42 +38,58 @@ async function init() {
     });
 
     return new Promise((acc, rej) => {
+        // Create todo_items table
         pool.query(
             `CREATE TABLE IF NOT EXISTS todo_items (
                 id varchar(36) PRIMARY KEY, 
                 name varchar(255) NOT NULL, 
                 completed boolean DEFAULT FALSE,
+                user_id varchar(36),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             ) DEFAULT CHARSET utf8mb4`,
             (err) => {
                 if (err) return rej(err);
 
-                // Check if columns exist and add them if they don't
+                // Create users table
                 pool.query(
-                    `SHOW COLUMNS FROM todo_items LIKE 'created_at'`,
-                    (showErr, rows) => {
-                        if (showErr) {
-                            console.log(`Connected to mysql db at host ${HOST}`);
-                            return acc();
-                        }
-                        
-                        if (rows.length === 0) {
-                            // Add timestamp columns if they don't exist
-                            pool.query(
-                                `ALTER TABLE todo_items 
-                                 ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                                 ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`,
-                                (alterErr) => {
-                                    if (alterErr) console.log('Note: Timestamp columns may already exist');
+                    `CREATE TABLE IF NOT EXISTS users (
+                        id varchar(36) PRIMARY KEY,
+                        first_name varchar(100) NOT NULL,
+                        last_name varchar(100) NOT NULL,
+                        email varchar(255) UNIQUE NOT NULL,
+                        password_hash varchar(255) NOT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                    ) DEFAULT CHARSET utf8mb4`,
+                    (userErr) => {
+                        if (userErr) return rej(userErr);
+
+                        // Check if user_id column exists in todo_items and add it if it doesn't
+                        pool.query(
+                            `SHOW COLUMNS FROM todo_items LIKE 'user_id'`,
+                            (showErr, rows) => {
+                                if (showErr) {
+                                    console.log(`Connected to mysql db at host ${HOST}`);
+                                    return acc();
+                                }
+                                
+                                if (rows.length === 0) {
+                                    // Add user_id column if it doesn't exist
+                                    pool.query(
+                                        `ALTER TABLE todo_items ADD COLUMN user_id varchar(36)`,
+                                        (alterErr) => {
+                                            if (alterErr) console.log('Note: user_id column may already exist');
+                                            console.log(`Connected to mysql db at host ${HOST}`);
+                                            acc();
+                                        }
+                                    );
+                                } else {
                                     console.log(`Connected to mysql db at host ${HOST}`);
                                     acc();
                                 }
-                            );
-                        } else {
-                            console.log(`Connected to mysql db at host ${HOST}`);
-                            acc();
-                        }
+                            }
+                        );
                     }
                 );
             },
@@ -177,6 +193,66 @@ async function removeItem(id) {
     });
 }
 
+// User management functions
+async function createUser(user) {
+    return new Promise((acc, rej) => {
+        pool.query(
+            'INSERT INTO users (id, first_name, last_name, email, password_hash) VALUES (?, ?, ?, ?, ?)',
+            [user.id, user.firstName, user.lastName, user.email, user.passwordHash],
+            (err) => {
+                if (err) return rej(err);
+                acc();
+            }
+        );
+    });
+}
+
+async function getUserByEmail(email) {
+    return new Promise((acc, rej) => {
+        pool.query('SELECT * FROM users WHERE email = ?', [email], (err, rows) => {
+            if (err) return rej(err);
+            acc(rows[0] || null);
+        });
+    });
+}
+
+async function getUserById(id) {
+    return new Promise((acc, rej) => {
+        pool.query('SELECT * FROM users WHERE id = ?', [id], (err, rows) => {
+            if (err) return rej(err);
+            acc(rows[0] || null);
+        });
+    });
+}
+
+// Update existing functions to filter by user
+async function getItemsByUser(userId) {
+    return new Promise((acc, rej) => {
+        pool.query('SELECT * FROM todo_items WHERE user_id = ?', [userId], (err, rows) => {
+            if (err) return rej(err);
+            acc(
+                rows.map((item) => ({
+                    ...item,
+                    completed: item.completed === 1,
+                }))
+            );
+        });
+    });
+}
+
+async function storeItemForUser(item, userId) {
+    return new Promise((acc, rej) => {
+        pool.query(
+            'INSERT INTO todo_items (id, name, completed, user_id) VALUES (?, ?, ?, ?)',
+            [item.id, item.name, item.completed ? 1 : 0, userId],
+            (err) => {
+                if (err) return rej(err);
+                acc();
+            }
+        );
+    });
+}
+
 module.exports = {
     init,
     teardown,
@@ -185,4 +261,9 @@ module.exports = {
     storeItem,
     updateItem,
     removeItem,
+    createUser,
+    getUserByEmail,
+    getUserById,
+    getItemsByUser,
+    storeItemForUser,
 };

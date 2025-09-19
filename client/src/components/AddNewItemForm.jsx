@@ -3,37 +3,30 @@ import PropTypes from 'prop-types';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
+import { apiCall } from '../utils/api';
 
 export function AddItemForm({ onNewItem }) {
     const [newItem, setNewItem] = useState('');
     const [submitting, setSubmitting] = useState(false);
 
-    const submitNewItem = (e) => {
+    const submitNewItem = async (e) => {
         e.preventDefault();
         setSubmitting(true);
 
-        const options = {
-            method: 'POST',
-            body: JSON.stringify({ name: newItem }),
-            headers: { 'Content-Type': 'application/json' },
-        };
-
-        fetch('/api/items', options)
-            .then((r) => {
-                if (!r.ok) {
-                    throw new Error(`HTTP error! status: ${r.status}`);
-                }
-                return r.json();
-            })
-            .then((item) => {
-                onNewItem(item);
-                setSubmitting(false);
-                setNewItem('');
-            })
-            .catch((error) => {
-                console.error('Error adding item:', error);
-                setSubmitting(false);
+        try {
+            const response = await apiCall('/api/items', {
+                method: 'POST',
+                body: JSON.stringify({ name: newItem }),
             });
+            
+            const item = await response.json();
+            onNewItem(item);
+            setSubmitting(false);
+                setNewItem('');
+        } catch (error) {
+            console.error('Error adding item:', error);
+            setSubmitting(false);
+        }
     };
 
     return (
