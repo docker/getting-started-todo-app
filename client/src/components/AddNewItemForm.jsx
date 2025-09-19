@@ -19,11 +19,20 @@ export function AddItemForm({ onNewItem }) {
         };
 
         fetch('/api/items', options)
-            .then((r) => r.json())
+            .then((r) => {
+                if (!r.ok) {
+                    throw new Error(`HTTP error! status: ${r.status}`);
+                }
+                return r.json();
+            })
             .then((item) => {
                 onNewItem(item);
                 setSubmitting(false);
                 setNewItem('');
+            })
+            .catch((error) => {
+                console.error('Error adding item:', error);
+                setSubmitting(false);
             });
     };
 

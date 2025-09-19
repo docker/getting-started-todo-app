@@ -49,15 +49,31 @@ async function init() {
             (err) => {
                 if (err) return rej(err);
 
-                // Add columns if they don't exist (for existing databases)
+                // Check if columns exist and add them if they don't
                 pool.query(
-                    `ALTER TABLE todo_items 
-                     ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                     ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`,
-                    (alterErr) => {
-                        // Ignore error if columns already exist
-                        console.log(`Connected to mysql db at host ${HOST}`);
-                        acc();
+                    `SHOW COLUMNS FROM todo_items LIKE 'created_at'`,
+                    (showErr, rows) => {
+                        if (showErr) {
+                            console.log(`Connected to mysql db at host ${HOST}`);
+                            return acc();
+                        }
+                        
+                        if (rows.length === 0) {
+                            // Add timestamp columns if they don't exist
+                            pool.query(
+                                `ALTER TABLE todo_items 
+                                 ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                                 ADD COLUMN updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`,
+                                (alterErr) => {
+                                    if (alterErr) console.log('Note: Timestamp columns may already exist');
+                                    console.log(`Connected to mysql db at host ${HOST}`);
+                                    acc();
+                                }
+                            );
+                        } else {
+                            console.log(`Connected to mysql db at host ${HOST}`);
+                            acc();
+                        }
                     }
                 );
             },
@@ -104,13 +120,24 @@ async function getItem(id) {
 
 async function storeItem(item) {
     return new Promise((acc, rej) => {
-        const now = new Date();
+        // Try inserting with timestamps first, fallback to basic insert if it fails
         pool.query(
-            'INSERT INTO todo_items (id, name, completed, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
-            [item.id, item.name, item.completed ? 1 : 0, now, now],
+            'INSERT INTO todo_items (id, name, completed, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())',
+            [item.id, item.name, item.completed ? 1 : 0],
             (err) => {
-                if (err) return rej(err);
-                acc();
+                if (err) {
+                    // Fallback to basic insert without timestamps
+                    pool.query(
+                        'INSERT INTO todo_items (id, name, completed) VALUES (?, ?, ?)',
+                        [item.id, item.name, item.completed ? 1 : 0],
+                        (fallbackErr) => {
+                            if (fallbackErr) return rej(fallbackErr);
+                            acc();
+                        }
+                    );
+                } else {
+                    acc();
+                }
             },
         );
     });
@@ -118,13 +145,24 @@ async function storeItem(item) {
 
 async function updateItem(id, item) {
     return new Promise((acc, rej) => {
-        const now = new Date();
+        // Try updating with timestamps first, fallback to basic update if it fails
         pool.query(
-            'UPDATE todo_items SET name=?, completed=?, updated_at=? WHERE id=?',
-            [item.name, item.completed ? 1 : 0, now, id],
+            'UPDATE todo_items SET name=?, completed=?, updated_at=NOW() WHERE id=?',
+            [item.name, item.completed ? 1 : 0, id],
             (err) => {
-                if (err) return rej(err);
-                acc();
+                if (err) {
+                    // Fallback to basic update without timestamps
+                    pool.query(
+                        'UPDATE todo_items SET name=?, completed=? WHERE id=?',
+                        [item.name, item.completed ? 1 : 0, id],
+                        (fallbackErr) => {
+                            if (fallbackErr) return rej(fallbackErr);
+                            acc();
+                        }
+                    );
+                } else {
+                    acc();
+                }
             },
         );
     });

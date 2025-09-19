@@ -25,14 +25,29 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
             }),
             headers: { 'Content-Type': 'application/json' },
         })
-            .then((r) => r.json())
-            .then(onItemUpdate);
+            .then((r) => {
+                if (!r.ok) {
+                    throw new Error(`HTTP error! status: ${r.status}`);
+                }
+                return r.json();
+            })
+            .then(onItemUpdate)
+            .catch((error) => {
+                console.error('Error toggling completion:', error);
+            });
     };
 
     const removeItem = () => {
-        fetch(`/api/items/${item.id}`, { method: 'DELETE' }).then(() =>
-            onItemRemoval(item),
-        );
+        fetch(`/api/items/${item.id}`, { method: 'DELETE' })
+            .then((r) => {
+                if (!r.ok) {
+                    throw new Error(`HTTP error! status: ${r.status}`);
+                }
+                onItemRemoval(item);
+            })
+            .catch((error) => {
+                console.error('Error removing item:', error);
+            });
     };
 
     const saveEdit = () => {
@@ -46,9 +61,20 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
             }),
             headers: { 'Content-Type': 'application/json' },
         })
-            .then((r) => r.json())
+            .then((r) => {
+                if (!r.ok) {
+                    throw new Error(`HTTP error! status: ${r.status}`);
+                }
+                return r.json();
+            })
             .then((updatedItem) => {
                 onItemUpdate(updatedItem);
+                setIsEditing(false);
+            })
+            .catch((error) => {
+                console.error('Error updating item:', error);
+                // Reset to original name on error
+                setEditName(item.name);
                 setIsEditing(false);
             });
     };
