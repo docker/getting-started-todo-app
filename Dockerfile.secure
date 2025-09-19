@@ -32,8 +32,8 @@ RUN apk update && apk upgrade && \
 ###################################################
 FROM base AS client-base
 COPY client/package.json client/package-lock.json ./
-# Install dependencies as root, then change ownership
-RUN npm ci --only=production && \
+# Install all dependencies for building
+RUN npm ci && \
     npm cache clean --force
 COPY client/.eslintrc.cjs client/index.html client/vite.config.js ./
 COPY client/public ./public
@@ -70,10 +70,13 @@ RUN npm run build
 # Base stage for backend with dependency installation
 ###################################################
 FROM base AS backend-base
-COPY backend/package.json backend/package-lock.json ./
-# Install dependencies and fix vulnerabilities
-RUN npm ci --only=production && \
-    npm audit fix --force && \
+
+# Copy production package.json (without sqlite3) for smaller, faster builds
+COPY backend/package.prod.json ./package.json
+COPY backend/package-lock.json ./
+
+# Install only production dependencies (no build tools needed)
+RUN npm ci --omit=dev && \
     npm cache clean --force
 
 ###################################################
@@ -93,11 +96,16 @@ CMD ["dumb-init", "npm", "run", "dev"]
 # Stage: test
 #
 # Test stage - runs as root for test permissions if needed
+# Uses regular package.json that includes sqlite3 for development/testing
 ###################################################
 FROM backend-dev AS test
 USER root
+# Copy the full dev package.json for testing
+COPY backend/package.json ./package.json
 RUN npm install --only=dev
 USER nextjs
+# Set environment to use MySQL for tests to avoid sqlite3 issues
+ENV MYSQL_HOST=mysql
 RUN npm run test
 
 ###################################################
@@ -110,10 +118,12 @@ FROM base AS final
 # Set production environment
 ENV NODE_ENV=production
 
-# Copy package files and install production dependencies
-COPY --from=test /usr/local/app/package.json /usr/local/app/package-lock.json ./
-RUN npm ci --only=production --ignore-scripts && \
-    npm audit fix --force && \
+# Copy production package files (without sqlite3)
+COPY backend/package.prod.json ./package.json
+COPY backend/package-lock.json ./
+
+# Install only production dependencies
+RUN npm ci --omit=dev && \
     npm cache clean --force
 
 # Copy application code
