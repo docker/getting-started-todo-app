@@ -60,6 +60,28 @@ services:
       - SETUID
     restart: unless-stopped
 
+  ###################################################
+  # Service: client (React frontend)
+  ###################################################
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3000
+    depends_on:
+      - backend
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: unless-stopped
+
 ###################################################
 # Volumes
 ###################################################
