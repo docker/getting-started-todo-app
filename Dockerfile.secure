@@ -3,6 +3,7 @@
 # 
 # This Dockerfile addresses Docker Scout security findings:
 # - Creates non-root user for security
+# - Uses better-sqlite3 (no Python compilation needed)
 # - Implements security best practices  
 # - Based on working original Dockerfile with security improvements
 ###################################################

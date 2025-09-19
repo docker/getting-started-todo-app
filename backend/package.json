@@ -5,13 +5,13 @@
   "scripts": {
     "format": "prettier -l --write \"**/*.js\"",
     "format-check": "prettier --check \"**/*.js\"",
-    "test": "jest",
+    "test": "SQLITE_DB_LOCATION=/tmp/test-todo.db jest",
     "dev": "nodemon src/index.js"
   },
   "dependencies": {
+    "better-sqlite3": "^12.2.0",
     "express": "^5.1.0",
     "mysql2": "^3.14.1",
-    "sqlite3": "^5.1.7",
     "uuid": "^11.1.0",
     "wait-port": "^1.1.0"
   },
