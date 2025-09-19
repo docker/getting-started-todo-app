@@ -10,6 +10,11 @@ const deleteItem = require('./routes/deleteItem');
 app.use(express.json());
 app.use(express.static(__dirname + '/static'));
 
+// Health check endpoint for container health monitoring
+app.get('/api/health', (req, res) => {
+    res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
 app.get('/api/greeting', getGreeting);
 app.get('/api/items', getItems);
 app.post('/api/items', addItem);
