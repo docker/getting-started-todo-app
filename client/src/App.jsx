@@ -3,12 +3,14 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import { TodoListCard } from './components/TodoListCard';
 import { Greeting } from './components/Greeting';
+import { LiveClock } from './components/LiveClock';
 
 function App() {
     return (
         <Container>
             <Row>
-                <Col md={{ offset: 3, span: 6 }}>
+                <Col md={{ offset: 2, span: 8 }}>
+                    <LiveClock />
                     <Greeting />
                     <TodoListCard />
                 </Col>

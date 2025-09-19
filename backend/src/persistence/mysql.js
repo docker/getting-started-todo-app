@@ -39,12 +39,27 @@ async function init() {
 
     return new Promise((acc, rej) => {
         pool.query(
-            'CREATE TABLE IF NOT EXISTS todo_items (id varchar(36), name varchar(255), completed boolean) DEFAULT CHARSET utf8mb4',
+            `CREATE TABLE IF NOT EXISTS todo_items (
+                id varchar(36) PRIMARY KEY, 
+                name varchar(255) NOT NULL, 
+                completed boolean DEFAULT FALSE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) DEFAULT CHARSET utf8mb4`,
             (err) => {
                 if (err) return rej(err);
 
-                console.log(`Connected to mysql db at host ${HOST}`);
-                acc();
+                // Add columns if they don't exist (for existing databases)
+                pool.query(
+                    `ALTER TABLE todo_items 
+                     ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                     ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP`,
+                    (alterErr) => {
+                        // Ignore error if columns already exist
+                        console.log(`Connected to mysql db at host ${HOST}`);
+                        acc();
+                    }
+                );
             },
         );
     });
@@ -64,11 +79,10 @@ async function getItems() {
         pool.query('SELECT * FROM todo_items', (err, rows) => {
             if (err) return rej(err);
             acc(
-                rows.map((item) =>
-                    Object.assign({}, item, {
-                        completed: item.completed === 1,
-                    }),
-                ),
+                rows.map((item) => ({
+                    ...item,
+                    completed: item.completed === 1,
+                })),
             );
         });
     });
@@ -79,11 +93,10 @@ async function getItem(id) {
         pool.query('SELECT * FROM todo_items WHERE id=?', [id], (err, rows) => {
             if (err) return rej(err);
             acc(
-                rows.map((item) =>
-                    Object.assign({}, item, {
-                        completed: item.completed === 1,
-                    }),
-                )[0],
+                rows.map((item) => ({
+                    ...item,
+                    completed: item.completed === 1,
+                }))[0],
             );
         });
     });
@@ -91,9 +104,10 @@ async function getItem(id) {
 
 async function storeItem(item) {
     return new Promise((acc, rej) => {
+        const now = new Date();
         pool.query(
-            'INSERT INTO todo_items (id, name, completed) VALUES (?, ?, ?)',
-            [item.id, item.name, item.completed ? 1 : 0],
+            'INSERT INTO todo_items (id, name, completed, created_at, updated_at) VALUES (?, ?, ?, ?, ?)',
+            [item.id, item.name, item.completed ? 1 : 0, now, now],
             (err) => {
                 if (err) return rej(err);
                 acc();
@@ -104,9 +118,10 @@ async function storeItem(item) {
 
 async function updateItem(id, item) {
     return new Promise((acc, rej) => {
+        const now = new Date();
         pool.query(
-            'UPDATE todo_items SET name=?, completed=? WHERE id=?',
-            [item.name, item.completed ? 1 : 0, id],
+            'UPDATE todo_items SET name=?, completed=?, updated_at=? WHERE id=?',
+            [item.name, item.completed ? 1 : 0, now, id],
             (err) => {
                 if (err) return rej(err);
                 acc();

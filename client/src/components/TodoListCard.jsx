@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { AddItemForm } from './AddNewItemForm';
 import { ItemDisplay } from './ItemDisplay';
+import { TodoStats } from './TodoStats';
 
 export function TodoListCard() {
     const [items, setItems] = useState(null);
@@ -43,6 +44,7 @@ export function TodoListCard() {
     return (
         <>
             <AddItemForm onNewItem={onNewItem} />
+            <TodoStats items={items} />
             {items.length === 0 && (
                 <p className="text-center">No items yet! Add one above!</p>
             )}
