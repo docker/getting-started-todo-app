@@ -17,7 +17,7 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: secret
       MYSQL_DB: todos
-      NODE_ENV: production
+      NODE_ENV: development
     depends_on:
       mysql:
         condition: service_healthy
@@ -71,6 +71,7 @@ services:
       - "5173:5173"
     environment:
       - VITE_API_URL=http://localhost:3000
+      - CHOKIDAR_USEPOLLING=true
     depends_on:
       - backend
     volumes:
