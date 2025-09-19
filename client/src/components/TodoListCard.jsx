@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { AddItemForm } from './AddNewItemForm';
 import { ItemDisplay } from './ItemDisplay';
 import { TodoStats } from './TodoStats';
@@ -6,7 +7,6 @@ import { apiCall } from '../utils/api';
 
 export function TodoListCard() {
     const [items, setItems] = useState(null);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -16,7 +16,7 @@ export function TodoListCard() {
                 setItems(data);
             } catch (err) {
                 console.error('Error fetching items:', err);
-                setError('Failed to load items');
+                // Could show error state here if needed
             }
         };
 
@@ -50,23 +50,78 @@ export function TodoListCard() {
         [items],
     );
 
-    if (items === null) return 'Loading...';
+    if (items === null) {
+        return (
+            <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '200px' }}>
+                <div className="text-center glass-card p-4">
+                    <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        style={{ display: 'inline-block', marginBottom: '1rem' }}
+                        className="fs-2"
+                    >
+                        ⟳
+                    </motion.div>
+                    <p className="glass-text mb-0">Loading your todos...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
-        <>
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+        >
             <AddItemForm onNewItem={onNewItem} />
             <TodoStats items={items} />
             {items.length === 0 && (
-                <p className="text-center">No items yet! Add one above!</p>
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                    className="text-center glass-card p-5 my-4"
+                >
+                    <motion.div
+                        animate={{ 
+                            scale: [1, 1.1, 1],
+                            opacity: [0.5, 1, 0.5]
+                        }}
+                        transition={{ 
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                        }}
+                        className="fs-1 mb-3"
+                    >
+                        ✨
+                    </motion.div>
+                    <h4 className="gradient-text mb-3">Ready to get organized?</h4>
+                    <p className="glass-text-muted">No todos yet! Add your first task above to get started.</p>
+                </motion.div>
             )}
-            {items.map((item) => (
-                <ItemDisplay
-                    key={item.id}
-                    item={item}
-                    onItemUpdate={onItemUpdate}
-                    onItemRemoval={onItemRemoval}
-                />
-            ))}
-        </>
+            <AnimatePresence>
+                {items.map((item, index) => (
+                    <motion.div
+                        key={item.id}
+                        initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -20, scale: 0.9 }}
+                        transition={{ 
+                            duration: 0.3,
+                            delay: index * 0.1
+                        }}
+                        layout
+                    >
+                        <ItemDisplay
+                            item={item}
+                            onItemUpdate={onItemUpdate}
+                            onItemRemoval={onItemRemoval}
+                        />
+                    </motion.div>
+                ))}
+            </AnimatePresence>
+        </motion.div>
     );
 }

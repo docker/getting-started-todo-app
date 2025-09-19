@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import Card from 'react-bootstrap/Card';
 
 export function LiveClock() {
@@ -24,12 +25,37 @@ export function LiveClock() {
         });
     };
 
+    const tickVariants = {
+        initial: { scale: 1 },
+        animate: { 
+            scale: [1, 1.02, 1],
+            transition: { 
+                duration: 1,
+                repeat: Infinity,
+                ease: "easeInOut"
+            }
+        }
+    };
+
     return (
-        <Card className="mb-3 bg-primary text-white">
-            <Card.Body className="text-center">
-                <Card.Title className="mb-1">Current Time</Card.Title>
-                <div className="h5 mb-0">{formatTime(currentTime)}</div>
-            </Card.Body>
-        </Card>
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+        >
+            <Card className="glass-card border-0 mb-3 floating">
+                <Card.Body className="text-center p-4">
+                    <Card.Title className="gradient-text mb-3 fs-4">Current Time</Card.Title>
+                    <motion.div 
+                        variants={tickVariants}
+                        initial="initial"
+                        animate="animate"
+                        className="glass-text fs-5 fw-semibold"
+                    >
+                        {formatTime(currentTime)}
+                    </motion.div>
+                </Card.Body>
+            </Card>
+        </motion.div>
     );
 }

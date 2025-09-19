@@ -148,24 +148,26 @@ export const AuthForm = () => {
     };
 
     return (
-        <div className="d-flex justify-content-center align-items-center min-vh-100">
+        <div className="d-flex justify-content-center align-items-center min-vh-100 p-3">
             <motion.div
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                style={{ width: '100%', maxWidth: '400px' }}
+                className="w-100"
+                style={{ maxWidth: '450px' }}
             >
-                <Card className="shadow-lg border-0">
+                <Card className="glass-card border-0 shadow-lg floating">
                     <Card.Body className="p-4">
                         <motion.div variants={itemVariants} className="text-center mb-4">
-                            <h2 className="fw-bold text-primary">
-                                {isLogin ? 'Welcome Back!' : 'Create Account'}
+                            <h2 className="gradient-text mb-2">
+                                {isLogin ? 'Welcome Back!' : 'Join Us Today!'}
                             </h2>
-                            <p className="text-muted">
-                                {isLogin
-                                    ? 'Sign in to continue to your tasks'
-                                    : 'Join us to organize your life'}
+                            <p className="glass-text-muted">
+                                {isLogin 
+                                    ? 'Sign in to access your todos' 
+                                    : 'Create your account to get started'
+                                }
                             </p>
                         </motion.div>
 
@@ -175,9 +177,18 @@ export const AuthForm = () => {
                                     initial={{ opacity: 0, height: 0 }}
                                     animate={{ opacity: 1, height: 'auto' }}
                                     exit={{ opacity: 0, height: 0 }}
-                                    transition={{ duration: 0.3 }}
+                                    className="mb-3"
                                 >
-                                    <Alert variant={alert.type} className="mb-3">
+                                    <Alert 
+                                        variant={alert.type} 
+                                        className="glass-card border-0 text-center"
+                                        style={{ 
+                                            background: alert.type === 'danger' 
+                                                ? 'rgba(220, 53, 69, 0.2)' 
+                                                : 'rgba(40, 167, 69, 0.2)',
+                                            color: 'white'
+                                        }}
+                                    >
                                         {alert.message}
                                     </Alert>
                                 </motion.div>
@@ -195,10 +206,10 @@ export const AuthForm = () => {
                                             exit="hidden"
                                             className="mb-3"
                                         >
-                                            <Form.Label>First Name</Form.Label>
+                                            <Form.Label className="glass-text">First Name</Form.Label>
                                             <InputGroup>
-                                                <InputGroup.Text>
-                                                    <FontAwesomeIcon icon={faUser} />
+                                                <InputGroup.Text className="glass-input border-0">
+                                                    <FontAwesomeIcon icon={faUser} className="text-white" />
                                                 </InputGroup.Text>
                                                 <Form.Control
                                                     type="text"
@@ -207,6 +218,7 @@ export const AuthForm = () => {
                                                     onChange={handleInputChange}
                                                     isInvalid={!!errors.firstName}
                                                     placeholder="Enter your first name"
+                                                    className="glass-input border-0"
                                                 />
                                                 <Form.Control.Feedback type="invalid">
                                                     {errors.firstName}
@@ -221,10 +233,10 @@ export const AuthForm = () => {
                                             exit="hidden"
                                             className="mb-3"
                                         >
-                                            <Form.Label>Last Name</Form.Label>
+                                            <Form.Label className="glass-text">Last Name</Form.Label>
                                             <InputGroup>
-                                                <InputGroup.Text>
-                                                    <FontAwesomeIcon icon={faUser} />
+                                                <InputGroup.Text className="glass-input border-0">
+                                                    <FontAwesomeIcon icon={faUser} className="text-white" />
                                                 </InputGroup.Text>
                                                 <Form.Control
                                                     type="text"
@@ -233,6 +245,7 @@ export const AuthForm = () => {
                                                     onChange={handleInputChange}
                                                     isInvalid={!!errors.lastName}
                                                     placeholder="Enter your last name"
+                                                    className="glass-input border-0"
                                                 />
                                                 <Form.Control.Feedback type="invalid">
                                                     {errors.lastName}
@@ -244,10 +257,10 @@ export const AuthForm = () => {
                             </AnimatePresence>
 
                             <motion.div variants={itemVariants} className="mb-3">
-                                <Form.Label>Email</Form.Label>
+                                <Form.Label className="glass-text">Email</Form.Label>
                                 <InputGroup>
-                                    <InputGroup.Text>
-                                        <FontAwesomeIcon icon={faEnvelope} />
+                                    <InputGroup.Text className="glass-input border-0">
+                                        <FontAwesomeIcon icon={faEnvelope} className="text-white" />
                                     </InputGroup.Text>
                                     <Form.Control
                                         type="email"
@@ -256,6 +269,7 @@ export const AuthForm = () => {
                                         onChange={handleInputChange}
                                         isInvalid={!!errors.email}
                                         placeholder="Enter your email"
+                                        className="glass-input border-0"
                                     />
                                     <Form.Control.Feedback type="invalid">
                                         {errors.email}
@@ -264,10 +278,10 @@ export const AuthForm = () => {
                             </motion.div>
 
                             <motion.div variants={itemVariants} className="mb-3">
-                                <Form.Label>Password</Form.Label>
+                                <Form.Label className="glass-text">Password</Form.Label>
                                 <InputGroup>
-                                    <InputGroup.Text>
-                                        <FontAwesomeIcon icon={faLock} />
+                                    <InputGroup.Text className="glass-input border-0">
+                                        <FontAwesomeIcon icon={faLock} className="text-white" />
                                     </InputGroup.Text>
                                     <Form.Control
                                         type={showPassword ? 'text' : 'password'}
@@ -276,16 +290,18 @@ export const AuthForm = () => {
                                         onChange={handleInputChange}
                                         isInvalid={!!errors.password}
                                         placeholder="Enter your password"
+                                        className="glass-input border-0"
                                     />
-                                    <Button
-                                        variant="outline-secondary"
+                                    <InputGroup.Text
+                                        className="glass-input border-0"
+                                        style={{ cursor: 'pointer' }}
                                         onClick={() => setShowPassword(!showPassword)}
-                                        style={{ border: 'none' }}
                                     >
-                                        <FontAwesomeIcon
-                                            icon={showPassword ? faEyeSlash : faEye}
+                                        <FontAwesomeIcon 
+                                            icon={showPassword ? faEyeSlash : faEye} 
+                                            className="text-white"
                                         />
-                                    </Button>
+                                    </InputGroup.Text>
                                     <Form.Control.Feedback type="invalid">
                                         {errors.password}
                                     </Form.Control.Feedback>
@@ -299,12 +315,12 @@ export const AuthForm = () => {
                                         initial="hidden"
                                         animate="visible"
                                         exit="hidden"
-                                        className="mb-3"
+                                        className="mb-4"
                                     >
-                                        <Form.Label>Confirm Password</Form.Label>
+                                        <Form.Label className="glass-text">Confirm Password</Form.Label>
                                         <InputGroup>
-                                            <InputGroup.Text>
-                                                <FontAwesomeIcon icon={faLock} />
+                                            <InputGroup.Text className="glass-input border-0">
+                                                <FontAwesomeIcon icon={faLock} className="text-white" />
                                             </InputGroup.Text>
                                             <Form.Control
                                                 type={showConfirmPassword ? 'text' : 'password'}
@@ -313,18 +329,18 @@ export const AuthForm = () => {
                                                 onChange={handleInputChange}
                                                 isInvalid={!!errors.confirmPassword}
                                                 placeholder="Confirm your password"
+                                                className="glass-input border-0"
                                             />
-                                            <Button
-                                                variant="outline-secondary"
-                                                onClick={() =>
-                                                    setShowConfirmPassword(!showConfirmPassword)
-                                                }
-                                                style={{ border: 'none' }}
+                                            <InputGroup.Text
+                                                className="glass-input border-0"
+                                                style={{ cursor: 'pointer' }}
+                                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                                             >
-                                                <FontAwesomeIcon
-                                                    icon={showConfirmPassword ? faEyeSlash : faEye}
+                                                <FontAwesomeIcon 
+                                                    icon={showConfirmPassword ? faEyeSlash : faEye} 
+                                                    className="text-white"
                                                 />
-                                            </Button>
+                                            </InputGroup.Text>
                                             <Form.Control.Feedback type="invalid">
                                                 {errors.confirmPassword}
                                             </Form.Control.Feedback>
@@ -333,53 +349,48 @@ export const AuthForm = () => {
                                 )}
                             </AnimatePresence>
 
-                            <motion.div variants={itemVariants} className="mb-3">
-                                <motion.div
-                                    variants={buttonVariants}
-                                    whileHover="hover"
-                                    whileTap="tap"
+                            <motion.div variants={itemVariants} className="d-grid gap-2 mb-3">
+                                <Button
+                                    type="submit"
+                                    disabled={isLoading}
+                                    className="glow-button pulse"
+                                    style={{ minHeight: '50px' }}
                                 >
-                                    <Button
-                                        type="submit"
-                                        variant="primary"
-                                        size="lg"
-                                        className="w-100"
-                                        disabled={isLoading}
-                                    >
-                                        {isLoading ? (
-                                            <>
-                                                <span
-                                                    className="spinner-border spinner-border-sm me-2"
-                                                    role="status"
-                                                    aria-hidden="true"
-                                                ></span>
-                                                {isLogin ? 'Signing In...' : 'Creating Account...'}
-                                            </>
-                                        ) : (
-                                            <>{isLogin ? 'Sign In' : 'Create Account'}</>
-                                        )}
-                                    </Button>
-                                </motion.div>
+                                    {isLoading ? (
+                                        <>
+                                            <motion.div
+                                                animate={{ rotate: 360 }}
+                                                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                                                style={{ display: 'inline-block', marginRight: '8px' }}
+                                            >
+                                                ⟳
+                                            </motion.div>
+                                            {isLogin ? 'Signing In...' : 'Creating Account...'}
+                                        </>
+                                    ) : (
+                                        isLogin ? 'Sign In' : 'Create Account'
+                                    )}
+                                </Button>
                             </motion.div>
 
                             <motion.div variants={itemVariants} className="text-center">
-                                <p className="mb-0">
-                                    {isLogin ? "Don't have an account? " : 'Already have an account? '}
+                                <p className="glass-text-muted mb-2">
+                                    {isLogin ? "Don't have an account?" : 'Already have an account?'}
+                                </p>
+                                <Button
+                                    variant="link"
+                                    onClick={toggleMode}
+                                    className="glass-text p-0 text-decoration-none"
+                                    style={{ border: 'none', background: 'none' }}
+                                >
                                     <motion.span
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
-                                        style={{ display: 'inline-block' }}
+                                        className="gradient-text"
                                     >
-                                        <Button
-                                            variant="link"
-                                            onClick={toggleMode}
-                                            className="p-0 text-decoration-none"
-                                            disabled={isLoading}
-                                        >
-                                            {isLogin ? 'Sign Up' : 'Sign In'}
-                                        </Button>
+                                        {isLogin ? 'Sign up here' : 'Sign in here'}
                                     </motion.span>
-                                </p>
+                                </Button>
                             </motion.div>
                         </Form>
                     </Card.Body>

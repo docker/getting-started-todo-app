@@ -29,32 +29,50 @@ export const Header = () => {
 
     return (
         <motion.div variants={headerVariants} initial="hidden" animate="visible">
-            <Navbar bg="light" expand="lg" className="shadow-sm mb-4">
+            <Navbar className="glass-card border-0 mb-4" expand="lg" style={{ margin: '1rem' }}>
                 <Container>
-                    <Navbar.Brand href="#" className="fw-bold text-primary">
+                    <Navbar.Brand href="#" className="gradient-text fw-bold fs-3">
                         <FontAwesomeIcon icon={faTasks} className="me-2" />
                         TodoApp
                     </Navbar.Brand>
                     
-                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" className="border-0" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="ms-auto">
                             <motion.div variants={dropdownVariants} whileHover="hover">
                                 <NavDropdown
                                     title={
-                                        <span>
+                                        <span className="glass-text">
                                             <FontAwesomeIcon icon={faUser} className="me-2" />
                                             {user?.firstName} {user?.lastName}
                                         </span>
                                     }
                                     id="user-nav-dropdown"
                                     align="end"
+                                    className="glass-dropdown"
                                 >
-                                    <NavDropdown.Item disabled>
-                                        <small className="text-muted">{user?.email}</small>
+                                    <NavDropdown.Item 
+                                        disabled 
+                                        className="glass-text"
+                                        style={{ background: 'rgba(255, 255, 255, 0.1)' }}
+                                    >
+                                        <small className="glass-text-muted">{user?.email}</small>
                                     </NavDropdown.Item>
-                                    <NavDropdown.Divider />
-                                    <NavDropdown.Item onClick={handleLogout}>
+                                    <NavDropdown.Divider style={{ borderColor: 'rgba(255, 255, 255, 0.3)' }} />
+                                    <NavDropdown.Item 
+                                        onClick={handleLogout}
+                                        className="glass-text"
+                                        style={{ 
+                                            background: 'rgba(255, 255, 255, 0.1)',
+                                            transition: 'all 0.3s ease'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            e.target.style.background = 'rgba(255, 255, 255, 0.2)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.target.style.background = 'rgba(255, 255, 255, 0.1)';
+                                        }}
+                                    >
                                         <FontAwesomeIcon icon={faSignOutAlt} className="me-2" />
                                         Logout
                                     </NavDropdown.Item>
