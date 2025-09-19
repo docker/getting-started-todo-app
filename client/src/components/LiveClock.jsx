@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import Card from 'react-bootstrap/Card';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClock, faCalendarAlt } from '@fortawesome/free-solid-svg-icons';
 
 export function LiveClock() {
     const [currentTime, setCurrentTime] = useState(new Date());
@@ -13,12 +14,17 @@ export function LiveClock() {
         return () => clearInterval(timer);
     }, []);
 
-    const formatTime = (date) => {
-        return date.toLocaleString('en-US', {
+    const formatDate = (date) => {
+        return date.toLocaleDateString('en-US', {
             weekday: 'long',
             year: 'numeric',
             month: 'long',
             day: 'numeric',
+        });
+    };
+
+    const formatTime = (date) => {
+        return date.toLocaleTimeString('en-US', {
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit',
@@ -37,25 +43,64 @@ export function LiveClock() {
         }
     };
 
+    const containerVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.5 }
+        }
+    };
+
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            className="mb-8 max-w-md mx-auto"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
         >
-            <Card className="glass-card border-0 mb-3 floating">
-                <Card.Body className="text-center p-4">
-                    <Card.Title className="gradient-text mb-3 fs-4">Current Time</Card.Title>
+            <div className="glass rounded-2xl p-6 shadow-xl border border-white/20">
+                {/* Date Section */}
+                <div className="flex items-center justify-center space-x-3 mb-4">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <FontAwesomeIcon 
+                            icon={faCalendarAlt} 
+                            className="text-white text-lg"
+                        />
+                    </div>
+                    <div className="text-left">
+                        <p className="text-gray-600 dark:text-gray-400 text-sm font-medium uppercase tracking-wide">
+                            Today
+                        </p>
+                        <h3 className="text-gray-800 dark:text-gray-200 text-lg font-semibold">
+                            {formatDate(currentTime)}
+                        </h3>
+                    </div>
+                </div>
+
+                {/* Time Section */}
+                <div className="flex items-center justify-center space-x-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <FontAwesomeIcon 
+                            icon={faClock} 
+                            className="text-white text-lg"
+                        />
+                    </div>
                     <motion.div 
                         variants={tickVariants}
                         initial="initial"
                         animate="animate"
-                        className="glass-text fs-5 fw-semibold"
+                        className="text-left"
                     >
-                        {formatTime(currentTime)}
+                        <p className="text-gray-600 dark:text-gray-400 text-sm font-medium uppercase tracking-wide">
+                            Current Time
+                        </p>
+                        <div className="font-mono text-2xl font-bold text-gray-800 dark:text-gray-200 tabular-nums">
+                            {formatTime(currentTime)}
+                        </div>
                     </motion.div>
-                </Card.Body>
-            </Card>
+                </div>
+            </div>
         </motion.div>
     );
 }

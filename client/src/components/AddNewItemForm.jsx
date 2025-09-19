@@ -3,10 +3,6 @@ import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import PropTypes from 'prop-types';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Card from 'react-bootstrap/Card';
 import { apiCall } from '../utils/api';
 
 export function AddItemForm({ onNewItem }) {
@@ -15,81 +11,131 @@ export function AddItemForm({ onNewItem }) {
 
     const submitNewItem = async (e) => {
         e.preventDefault();
+        if (!newItem.trim()) return;
+        
         setSubmitting(true);
 
         try {
             const response = await apiCall('/api/items', {
                 method: 'POST',
-                body: JSON.stringify({ name: newItem }),
+                body: JSON.stringify({ name: newItem.trim() }),
             });
             
             const item = await response.json();
             onNewItem(item);
-            setSubmitting(false);
-                setNewItem('');
+            setNewItem('');
         } catch (error) {
             console.error('Error adding item:', error);
+        } finally {
             setSubmitting(false);
         }
     };
 
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            submitNewItem(e);
+        }
+    };
+
+    const formVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: { duration: 0.5 }
+        }
+    };
+
+    const buttonVariants = {
+        idle: { scale: 1 },
+        hover: { 
+            scale: 1.05,
+            transition: { type: "spring", stiffness: 400 }
+        },
+        tap: { scale: 0.95 }
+    };
+
     return (
         <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-4"
+            className="mb-8 max-w-2xl mx-auto"
+            variants={formVariants}
+            initial="hidden"
+            animate="visible"
         >
-            <Card className="glass-card border-0 floating">
-                <Card.Body className="p-4">
-                    <h5 className="gradient-text mb-3 text-center">Add New Todo</h5>
-                    <Form onSubmit={submitNewItem}>
-                        <InputGroup>
-                            <Form.Control
-                                value={newItem}
-                                onChange={(e) => setNewItem(e.target.value)}
-                                type="text"
-                                placeholder="What needs to be done?"
-                                aria-label="New todo item"
-                                className="glass-input border-0 fs-5"
-                                style={{ minHeight: '50px' }}
-                            />
+            <div className="glass rounded-2xl p-6 shadow-xl border border-white/20">
+                <div className="text-center mb-6">
+                    <h2 className="text-xl font-display font-semibold text-gray-800 dark:text-gray-200 mb-2">
+                        Add New Task
+                    </h2>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm">
+                        What would you like to accomplish today?
+                    </p>
+                </div>
+
+                <form onSubmit={submitNewItem} className="space-y-4">
+                    <div className="relative">
+                        <input
+                            type="text"
+                            value={newItem}
+                            onChange={(e) => setNewItem(e.target.value)}
+                            onKeyPress={handleKeyPress}
+                            placeholder="e.g. Buy groceries, Call mom, Finish project..."
+                            disabled={submitting}
+                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
+                                     bg-white/50 dark:bg-black/50 text-gray-800 dark:text-gray-200 
+                                     placeholder-gray-500 dark:placeholder-gray-400
+                                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                                     transition-all duration-300"
+                        />
+                        {newItem && (
                             <motion.div
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2"
                             >
-                                <Button
-                                    type="submit"
-                                    disabled={!newItem.length || submitting}
-                                    className="glow-button"
-                                    style={{ minHeight: '50px', minWidth: '120px' }}
-                                >
-                                    {submitting ? (
-                                        <>
-                                            <motion.div
-                                                animate={{ rotate: 360 }}
-                                                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                                                style={{ display: 'inline-block', marginRight: '8px' }}
-                                            >
-                                                <FontAwesomeIcon icon={faSpinner} />
-                                            </motion.div>
-                                            Adding...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <FontAwesomeIcon icon={faPlus} className="me-2" />
-                                            Add Todo
-                                        </>
-                                    )}
-                                </Button>
+                                <span className="text-gray-400 text-sm">
+                                    Press Enter ↵
+                                </span>
                             </motion.div>
-                        </InputGroup>
-                    </Form>
-                </Card.Body>
-            </Card>
+                        )}
+                    </div>
+
+                    <motion.button
+                        type="submit"
+                        disabled={submitting || !newItem.trim()}
+                        variants={buttonVariants}
+                        initial="idle"
+                        whileHover="hover"
+                        whileTap="tap"
+                        className={`w-full py-3 px-6 rounded-xl font-medium text-white shadow-lg
+                                   transition-all duration-300 flex items-center justify-center space-x-2
+                                   ${submitting || !newItem.trim() 
+                                     ? 'bg-gray-400 cursor-not-allowed' 
+                                     : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:shadow-xl'
+                                   }`}
+                    >
+                        {submitting ? (
+                            <>
+                                <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+                                <span>Adding task...</span>
+                            </>
+                        ) : (
+                            <>
+                                <FontAwesomeIcon icon={faPlus} />
+                                <span>Add Task</span>
+                            </>
+                        )}
+                    </motion.button>
+                </form>
+            </div>
         </motion.div>
     );
 }
+
+AddItemForm.propTypes = {
+    onNewItem: PropTypes.func.isRequired,
+};
 
 AddItemForm.propTypes = {
     onNewItem: PropTypes.func,

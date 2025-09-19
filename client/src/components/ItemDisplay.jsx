@@ -1,19 +1,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import PropTypes from 'prop-types';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
-import Form from 'react-bootstrap/Form';
-import Card from 'react-bootstrap/Card';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons/faTrash';
-import { faEdit, faSave, faTimes, faCheck } from '@fortawesome/free-solid-svg-icons';
-import faCheckSquare from '@fortawesome/fontawesome-free-regular/faCheckSquare';
-import faSquare from '@fortawesome/fontawesome-free-regular/faSquare';
+import { faTrash, faEdit, faSave, faTimes, faCheck } from '@fortawesome/free-solid-svg-icons';
 import { apiCall } from '../utils/api';
-import './ItemDisplay.scss';
 
 export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
     const [isEditing, setIsEditing] = useState(false);
@@ -77,7 +67,6 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
             setIsEditing(false);
         } catch (error) {
             console.error('Error updating item:', error);
-            // Reset to original name on error
             setEditName(item.name);
             setIsEditing(false);
         }
@@ -103,160 +92,156 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
         return `${diffDays}d ago`;
     };
 
+    const itemVariants = {
+        initial: { opacity: 0, scale: 0.95 },
+        animate: { 
+            opacity: 1, 
+            scale: 1,
+            transition: { duration: 0.3 }
+        },
+        exit: { 
+            opacity: 0, 
+            scale: 0.95,
+            transition: { duration: 0.2 }
+        }
+    };
+
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.3 }}
-            className="mb-3"
+            variants={itemVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            layout
+            className="group"
         >
-            <Card className={`glass-card border-0 ${item.completed ? 'opacity-75' : ''} floating`}>
-                <Card.Body className="p-3">
-                    <Container fluid>
-                        <Row className="align-items-center">
-                            <Col xs={1} className="text-center">
-                                <motion.div
-                                    whileHover={{ scale: 1.2 }}
+            <div className={`glass rounded-2xl p-4 shadow-lg border border-white/20 transition-all duration-300
+                           ${item.completed ? 'opacity-75' : ''} 
+                           ${isEditing ? 'ring-2 ring-blue-500 ring-opacity-50' : 'hover:shadow-xl'}`}>
+                
+                <div className="flex items-center space-x-4">
+                    {/* Checkbox */}
+                    <motion.button
+                        onClick={toggleCompletion}
+                        className={`flex-shrink-0 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300
+                                   ${item.completed 
+                                     ? 'bg-green-500 border-green-500 text-white' 
+                                     : 'border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400'
+                                   }`}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                    >
+                        {item.completed && (
+                            <motion.div
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ type: "spring", stiffness: 500 }}
+                            >
+                                <FontAwesomeIcon icon={faCheck} className="w-3 h-3" />
+                            </motion.div>
+                        )}
+                    </motion.button>
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                        {isEditing ? (
+                            <input
+                                type="text"
+                                value={editName}
+                                onChange={(e) => setEditName(e.target.value)}
+                                onKeyPress={(e) => {
+                                    if (e.key === 'Enter') saveEdit();
+                                    if (e.key === 'Escape') cancelEdit();
+                                }}
+                                className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
+                                         bg-white/80 dark:bg-black/80 text-gray-800 dark:text-gray-200
+                                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                autoFocus
+                            />
+                        ) : (
+                            <div>
+                                <h3 className={`text-lg font-medium transition-all duration-300 ${
+                                    item.completed 
+                                    ? 'line-through text-gray-500 dark:text-gray-400' 
+                                    : 'text-gray-800 dark:text-gray-200'
+                                }`}>
+                                    {item.name}
+                                </h3>
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                    Created {formatRelativeTime(item.created_at)}
+                                    {item.updated_at !== item.created_at && (
+                                        <span> • Updated {formatRelativeTime(item.updated_at)}</span>
+                                    )}
+                                </p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className={`flex items-center space-x-2 transition-opacity duration-300 ${
+                        isEditing ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                    }`}>
+                        {isEditing ? (
+                            <>
+                                <motion.button
+                                    onClick={saveEdit}
+                                    className="p-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors"
+                                    whileHover={{ scale: 1.1 }}
                                     whileTap={{ scale: 0.9 }}
+                                    title="Save"
                                 >
-                                    <Button
-                                        variant="link"
-                                        onClick={toggleCompletion}
-                                        className={`p-0 ${item.completed ? 'text-success' : 'glass-text'}`}
-                                        style={{ fontSize: '1.5rem' }}
-                                        aria-label={
-                                            item.completed
-                                                ? 'Mark item as incomplete'
-                                                : 'Mark item as complete'
-                                        }
-                                    >
-                                        {item.completed ? (
-                                            <motion.div
-                                                initial={{ scale: 0 }}
-                                                animate={{ scale: 1 }}
-                                                transition={{ type: "spring", stiffness: 500 }}
-                                            >
-                                                <FontAwesomeIcon icon={faCheck} className="text-success" />
-                                            </motion.div>
-                                        ) : (
-                                            <FontAwesomeIcon icon={faSquare} />
-                                        )}
-                                    </Button>
-                                </motion.div>
-                            </Col>
-                            <Col xs={7} className="name">
-                                {isEditing ? (
-                                    <motion.div
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        transition={{ duration: 0.3 }}
-                                    >
-                                        <Form.Control
-                                            type="text"
-                                            value={editName}
-                                            onChange={(e) => setEditName(e.target.value)}
-                                            onKeyPress={(e) => {
-                                                if (e.key === 'Enter') saveEdit();
-                                                if (e.key === 'Escape') cancelEdit();
-                                            }}
-                                            className="glass-input border-0"
-                                            autoFocus
-                                        />
-                                    </motion.div>
-                                ) : (
-                                    <motion.div
-                                        whileHover={{ x: 5 }}
-                                        transition={{ duration: 0.2 }}
-                                    >
-                                        <div 
-                                            className={`glass-text fs-5 ${item.completed ? 'text-decoration-line-through opacity-75' : ''}`}
-                                        >
-                                            {item.name}
-                                        </div>
-                                        <small className="glass-text-muted">
-                                            Created: {formatRelativeTime(item.created_at)}
-                                            {item.updated_at !== item.created_at && (
-                                                <span> • Updated: {formatRelativeTime(item.updated_at)}</span>
-                                            )}
-                                        </small>
-                                    </motion.div>
-                                )}
-                            </Col>
-                            <Col xs={4} className="text-end">
-                                {isEditing ? (
-                                    <>
-                                        <motion.div
-                                            whileHover={{ scale: 1.1 }}
-                                            whileTap={{ scale: 0.9 }}
-                                            style={{ display: 'inline-block', marginRight: '0.5rem' }}
-                                        >
-                                            <Button
-                                                size="sm"
-                                                variant="link"
-                                                onClick={saveEdit}
-                                                className="text-success p-2"
-                                                title="Save"
-                                            >
-                                                <FontAwesomeIcon icon={faSave} />
-                                            </Button>
-                                        </motion.div>
-                                        <motion.div
-                                            whileHover={{ scale: 1.1 }}
-                                            whileTap={{ scale: 0.9 }}
-                                            style={{ display: 'inline-block' }}
-                                        >
-                                            <Button
-                                                size="sm"
-                                                variant="link"
-                                                onClick={cancelEdit}
-                                                className="glass-text-muted p-2"
-                                                title="Cancel"
-                                            >
-                                                <FontAwesomeIcon icon={faTimes} />
-                                            </Button>
-                                        </motion.div>
-                                    </>
-                                ) : (
-                                    <motion.div
-                                        whileHover={{ scale: 1.1 }}
-                                        whileTap={{ scale: 0.9 }}
-                                        style={{ display: 'inline-block', marginRight: '0.5rem' }}
-                                    >
-                                        <Button
-                                            size="sm"
-                                            variant="link"
-                                            onClick={() => setIsEditing(true)}
-                                            className="glass-text p-2"
-                                            title="Edit"
-                                        >
-                                            <FontAwesomeIcon icon={faEdit} />
-                                        </Button>
-                                    </motion.div>
-                                )}
-                                <motion.div
-                                    whileHover={{ scale: 1.1, color: '#dc3545' }}
+                                    <FontAwesomeIcon icon={faSave} className="w-4 h-4" />
+                                </motion.button>
+                                <motion.button
+                                    onClick={cancelEdit}
+                                    className="p-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition-colors"
+                                    whileHover={{ scale: 1.1 }}
                                     whileTap={{ scale: 0.9 }}
-                                    style={{ display: 'inline-block' }}
+                                    title="Cancel"
                                 >
-                                    <Button
-                                        size="sm"
-                                        variant="link"
-                                        onClick={removeItem}
-                                        className="text-danger p-2"
-                                        title="Delete"
-                                    >
-                                        <FontAwesomeIcon icon={faTrash} />
-                                    </Button>
-                                </motion.div>
-                            </Col>
-                        </Row>
-                    </Container>
-                </Card.Body>
-            </Card>
+                                    <FontAwesomeIcon icon={faTimes} className="w-4 h-4" />
+                                </motion.button>
+                            </>
+                        ) : (
+                            <>
+                                <motion.button
+                                    onClick={() => setIsEditing(true)}
+                                    className="p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    title="Edit"
+                                >
+                                    <FontAwesomeIcon icon={faEdit} className="w-4 h-4" />
+                                </motion.button>
+                                <motion.button
+                                    onClick={removeItem}
+                                    className="p-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors"
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    title="Delete"
+                                >
+                                    <FontAwesomeIcon icon={faTrash} className="w-4 h-4" />
+                                </motion.button>
+                            </>
+                        )}
+                    </div>
+                </div>
+            </div>
         </motion.div>
     );
 }
+
+ItemDisplay.propTypes = {
+    item: PropTypes.shape({
+        id: PropTypes.string,
+        name: PropTypes.string,
+        completed: PropTypes.bool,
+        created_at: PropTypes.string,
+        updated_at: PropTypes.string,
+    }),
+    onItemUpdate: PropTypes.func,
+    onItemRemoval: PropTypes.func,
+};
 
 ItemDisplay.propTypes = {
     item: PropTypes.shape({
