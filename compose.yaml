@@ -11,7 +11,7 @@ services:
   backend:
     build:
       context: ./
-      dockerfile: Dockerfile.secure
+      dockerfile: Dockerfile
     environment:
       MYSQL_HOST: mysql
       MYSQL_USER: root
