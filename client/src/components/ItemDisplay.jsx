@@ -113,21 +113,15 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
             animate="animate"
             exit="exit"
             layout
-            className="group"
+            className="item-card-wrapper"
         >
-            <div className={`glass rounded-2xl p-4 shadow-lg border border-white/20 transition-all duration-300
-                           ${item.completed ? 'opacity-75' : ''} 
-                           ${isEditing ? 'ring-2 ring-blue-500 ring-opacity-50' : 'hover:shadow-xl'}`}>
+            <div className={`card-task ${item.completed ? 'completed' : ''} ${isEditing ? 'editing' : ''}`}>
                 
-                <div className="flex items-center space-x-4">
-                    {/* Checkbox */}
+                <div className="flex items-center gap-md">
+                    {/* Enhanced Checkbox */}
                     <motion.button
                         onClick={toggleCompletion}
-                        className={`flex-shrink-0 w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300
-                                   ${item.completed 
-                                     ? 'bg-green-500 border-green-500 text-white' 
-                                     : 'border-gray-300 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400'
-                                   }`}
+                        className={`checkbox-modern ${item.completed ? 'checkbox-checked' : 'checkbox-unchecked'}`}
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                     >
@@ -137,12 +131,12 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
                                 animate={{ scale: 1 }}
                                 transition={{ type: "spring", stiffness: 500 }}
                             >
-                                <FontAwesomeIcon icon={faCheck} className="w-3 h-3" />
+                                <FontAwesomeIcon icon={faCheck} className="icon icon-sm" />
                             </motion.div>
                         )}
                     </motion.button>
 
-                    {/* Content */}
+                    {/* Content Section */}
                     <div className="flex-1 min-w-0">
                         {isEditing ? (
                             <input
@@ -153,74 +147,67 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
                                     if (e.key === 'Enter') saveEdit();
                                     if (e.key === 'Escape') cancelEdit();
                                 }}
-                                className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 
-                                         bg-white/80 dark:bg-black/80 text-gray-800 dark:text-gray-200
-                                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                className="form-input w-full"
                                 autoFocus
+                                placeholder="Edit task name..."
                             />
                         ) : (
                             <div>
-                                <h3 className={`text-lg font-medium transition-all duration-300 ${
-                                    item.completed 
-                                    ? 'line-through text-gray-500 dark:text-gray-400' 
-                                    : 'text-gray-800 dark:text-gray-200'
-                                }`}>
+                                <h3 className={`task-title ${item.completed ? 'task-completed' : ''}`}>
                                     {item.name}
                                 </h3>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                    Created {formatRelativeTime(item.created_at)}
+                                <div className="task-meta-enhanced">
+                                    <span>📅 Created {formatRelativeTime(item.created_at)}</span>
                                     {item.updated_at !== item.created_at && (
-                                        <span> • Updated {formatRelativeTime(item.updated_at)}</span>
+                                        <span>✏️ Updated {formatRelativeTime(item.updated_at)}</span>
                                     )}
-                                </p>
+                                </div>
                             </div>
                         )}
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className={`flex items-center space-x-2 transition-opacity duration-300 ${
-                        isEditing ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                    }`}>
+                    {/* Always Visible Action Buttons */}
+                    <div className="action-buttons flex items-center gap-xs">
                         {isEditing ? (
                             <>
                                 <motion.button
                                     onClick={saveEdit}
-                                    className="p-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition-colors"
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    title="Save"
+                                    className="btn-modern btn-success btn-sm"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    title="Save changes"
                                 >
-                                    <FontAwesomeIcon icon={faSave} className="w-4 h-4" />
+                                    <FontAwesomeIcon icon={faSave} className="icon icon-sm" />
                                 </motion.button>
                                 <motion.button
                                     onClick={cancelEdit}
-                                    className="p-2 rounded-lg bg-gray-500 text-white hover:bg-gray-600 transition-colors"
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    title="Cancel"
+                                    className="btn-modern btn-secondary btn-sm"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    title="Cancel editing"
                                 >
-                                    <FontAwesomeIcon icon={faTimes} className="w-4 h-4" />
+                                    <FontAwesomeIcon icon={faTimes} className="icon icon-sm" />
                                 </motion.button>
                             </>
                         ) : (
                             <>
                                 <motion.button
                                     onClick={() => setIsEditing(true)}
-                                    className="p-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition-colors"
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    title="Edit"
+                                    className="btn-modern btn-secondary btn-sm"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    title="Edit task"
                                 >
-                                    <FontAwesomeIcon icon={faEdit} className="w-4 h-4" />
+                                    <FontAwesomeIcon icon={faEdit} className="icon icon-sm" />
                                 </motion.button>
                                 <motion.button
                                     onClick={removeItem}
-                                    className="p-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors"
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    title="Delete"
+                                    className="btn-modern btn-danger btn-sm"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    title="Delete task"
                                 >
-                                    <FontAwesomeIcon icon={faTrash} className="w-4 h-4" />
+                                    <FontAwesomeIcon icon={faTrash} className="icon icon-sm" />
                                 </motion.button>
                             </>
                         )}

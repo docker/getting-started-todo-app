@@ -5,6 +5,7 @@ import { faList, faCheck, faClock, faSpinner } from '@fortawesome/free-solid-svg
 import { AddItemForm } from './AddNewItemForm';
 import { ItemDisplay } from './ItemDisplay';
 import { TodoStats } from './TodoStats';
+import { TodoStatsEnhanced } from './TodoStatsEnhanced';
 import { EmptyState } from './EmptyState';
 import { apiCall } from '../utils/api';
 
@@ -139,7 +140,7 @@ export function TodoListCard() {
             animate="visible"
         >
             <AddItemForm onNewItem={onNewItem} />
-            <TodoStats items={items} />
+            <TodoStatsEnhanced items={items} />
             
             {/* Filter Buttons */}
             {items.length > 0 && (

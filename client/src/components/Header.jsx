@@ -1,10 +1,9 @@
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
     faUser, 
     faSignOutAlt, 
-    faTasks, 
     faChevronDown,
     faMoon,
     faSun 
@@ -24,6 +23,7 @@ export const Header = () => {
     const { user, logout } = useAuth();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [isDarkMode, setIsDarkMode] = useState(false);
+    const dropdownRef = useRef(null);
 
     useEffect(() => {
         const savedTheme = localStorage.getItem('theme');
@@ -31,6 +31,20 @@ export const Header = () => {
             setIsDarkMode(true);
             document.documentElement.classList.add('dark');
         }
+    }, []);
+
+    // Click outside handler
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setIsDropdownOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
     }, []);
 
     const handleLogout = () => {
@@ -84,7 +98,7 @@ export const Header = () => {
                             }}
                         >
                             <FontAwesomeIcon 
-                                icon={faTasks} 
+                                icon={faCheckCircle} 
                                 className="text-white text-lg"
                             />
                         </motion.div>
@@ -107,49 +121,33 @@ export const Header = () => {
                         {/* Enhanced Theme Toggle */}
                         <motion.button
                             onClick={toggleTheme}
-                            className="p-2 rounded-xl transition-all duration-300"
-                            style={{
-                                background: 'rgba(255, 255, 255, 0.15)',
-                                border: '1px solid rgba(255, 255, 255, 0.25)',
-                                backdropFilter: 'blur(10px)'
-                            }}
+                            className="header-btn header-theme-toggle"
                             whileHover={{ 
                                 scale: 1.05,
-                                background: 'rgba(255, 255, 255, 0.25)',
                                 y: -2
                             }}
                             whileTap={{ scale: 0.95 }}
                         >
                             <FontAwesomeIcon
                                 icon={isDarkMode ? faSun : faMoon}
-                                className="w-5 h-5"
+                                className="icon icon-sm"
                                 style={{ color: isDarkMode ? '#fbbf24' : '#6366f1' }}
                             />
                         </motion.button>
 
                         {/* Enhanced User Dropdown */}
-                        <div className="relative">
+                        <div className="relative" ref={dropdownRef}>
                             <motion.button
                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                className="flex items-center space-x-3 px-4 py-2 rounded-xl transition-all duration-300"
-                                style={{
-                                    background: 'rgba(255, 255, 255, 0.15)',
-                                    border: '1px solid rgba(255, 255, 255, 0.25)',
-                                    backdropFilter: 'blur(10px)'
-                                }}
+                                className="header-btn user-dropdown-btn"
                                 whileHover={{ 
                                     scale: 1.02,
-                                    background: 'rgba(255, 255, 255, 0.25)',
                                     y: -2
                                 }}
                                 whileTap={{ scale: 0.98 }}
                             >
                                 <motion.div 
-                                    className="w-8 h-8 rounded-full flex items-center justify-center"
-                                    style={{
-                                        background: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
-                                        boxShadow: '0 4px 15px rgba(139, 92, 246, 0.3)'
-                                    }}
+                                    className="user-avatar"
                                     whileHover={{ scale: 1.1 }}
                                 >
                                     <FontAwesomeIcon 
@@ -157,57 +155,66 @@ export const Header = () => {
                                         className="text-white text-sm"
                                     />
                                 </motion.div>
-                                <span 
-                                    className="font-medium"
-                                    style={{ color: isDarkMode ? '#f9fafb' : '#1f2937' }}
-                                >
+                                <span className="user-display-name">
                                     {user?.firstName} {user?.lastName}
                                 </span>
                                 <motion.div
+                                    className="dropdown-chevron"
                                     animate={{ rotate: isDropdownOpen ? 180 : 0 }}
                                     transition={{ duration: 0.2 }}
                                 >
                                     <FontAwesomeIcon 
                                         icon={faChevronDown} 
-                                        className="text-xs"
-                                        style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}
+                                        className="icon icon-xs"
                                     />
                                 </motion.div>
                             </motion.button>
 
-                            {/* Enhanced Dropdown Menu */}
+                            {/* Simplified Dropdown Menu */}
                             {isDropdownOpen && (
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.95, y: -10 }}
                                     animate={{ opacity: 1, scale: 1, y: 0 }}
                                     exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="absolute right-0 mt-2 w-48 rounded-xl shadow-xl py-2 z-50"
-                                    style={{
-                                        background: 'rgba(255, 255, 255, 0.15)',
-                                        backdropFilter: 'blur(20px)',
-                                        border: '1px solid rgba(255, 255, 255, 0.25)',
-                                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)'
-                                    }}
+                                    transition={{ duration: 0.3, ease: "easeOut" }}
+                                    className="dropdown-menu-simplified"
                                 >
-                                    <motion.button
-                                        onClick={handleLogout}
-                                        className="w-full flex items-center space-x-3 px-4 py-2 text-left transition-all duration-200"
-                                        style={{ 
-                                            color: isDarkMode ? '#f9fafb' : '#1f2937'
-                                        }}
-                                        whileHover={{ 
-                                            background: 'rgba(255, 255, 255, 0.1)',
-                                            x: 4
-                                        }}
-                                    >
-                                        <FontAwesomeIcon 
-                                            icon={faSignOutAlt} 
-                                            className="w-4 h-4" 
-                                            style={{ color: '#ef4444' }}
-                                        />
-                                        <span>Sign out</span>
-                                    </motion.button>
+                                    {/* Menu Items Only */}
+                                    <div className="dropdown-items">
+                                        <motion.button
+                                            className="dropdown-item dropdown-item-profile"
+                                            whileHover={{ x: 4, backgroundColor: 'rgba(99, 102, 241, 0.1)' }}
+                                            whileTap={{ scale: 0.98 }}
+                                        >
+                                            <div className="dropdown-item-icon profile-icon">
+                                                <FontAwesomeIcon icon={faUser} />
+                                            </div>
+                                            <div className="dropdown-item-content">
+                                                <span className="dropdown-item-title">Profile Settings</span>
+                                                <span className="dropdown-item-subtitle">Manage your account</span>
+                                            </div>
+                                        </motion.button>
+
+                                        {/* Sign Out Button */}
+                                        <motion.button
+                                            onClick={handleLogout}
+                                            className="dropdown-item dropdown-item-logout"
+                                            whileHover={{ 
+                                                x: 4, 
+                                                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                                scale: 1.02
+                                            }}
+                                            whileTap={{ scale: 0.98 }}
+                                        >
+                                            <div className="dropdown-item-icon logout-icon">
+                                                <FontAwesomeIcon icon={faSignOutAlt} />
+                                            </div>
+                                            <div className="dropdown-item-content">
+                                                <span className="dropdown-item-title">Sign Out</span>
+                                                <span className="dropdown-item-subtitle">Logout from your account</span>
+                                            </div>
+                                        </motion.button>
+                                    </div>
                                 </motion.div>
                             )}
                         </div>

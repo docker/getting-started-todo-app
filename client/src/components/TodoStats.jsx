@@ -1,9 +1,5 @@
 import PropTypes from 'prop-types';
 import { motion } from 'framer-motion';
-import Card from 'react-bootstrap/Card';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import ProgressBar from 'react-bootstrap/ProgressBar';
 
 export function TodoStats({ items }) {
     if (!items || items.length === 0) {
@@ -23,6 +19,49 @@ export function TodoStats({ items }) {
             return diffHours <= 24;
         });
         return recentItems.length;
+    };
+
+    // Circular progress bar SVG component
+    const CircularProgress = ({ percentage, size = 120, strokeWidth = 8, label, value }) => {
+        const radius = (size - strokeWidth) / 2;
+        const circumference = 2 * Math.PI * radius;
+        const strokeDashoffset = circumference - (percentage / 100) * circumference;
+
+        return (
+            <div className="progress-circle" style={{ width: size, height: size }}>
+                <svg className="progress-circle-svg" width={size} height={size}>
+                    <defs>
+                        <linearGradient id={`progressGradient-${label}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor="var(--gradient-start)" />
+                            <stop offset="100%" stopColor="var(--gradient-end)" />
+                        </linearGradient>
+                    </defs>
+                    <circle
+                        className="progress-circle-bg"
+                        cx={size / 2}
+                        cy={size / 2}
+                        r={radius}
+                        strokeWidth={strokeWidth}
+                    />
+                    <motion.circle
+                        className="progress-circle-fill"
+                        cx={size / 2}
+                        cy={size / 2}
+                        r={radius}
+                        strokeWidth={strokeWidth}
+                        stroke={`url(#progressGradient-${label})`}
+                        strokeDasharray={circumference}
+                        initial={{ strokeDashoffset: circumference }}
+                        animate={{ strokeDashoffset }}
+                        transition={{ duration: 2, ease: "easeInOut", delay: 0.5 }}
+                    />
+                </svg>
+                <div className="progress-circle-text">
+                    <div className="stat-number">{value}</div>
+                    <div className="progress-circle-label">{label}</div>
+                </div>
+            </div>
+        );
     };
 
     const statVariants = {
