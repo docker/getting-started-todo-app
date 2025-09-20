@@ -7,15 +7,34 @@ import { LiveClock } from './components/LiveClock';
 import { Header } from './components/Header';
 import { AuthForm } from './components/AuthForm';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { useEffect, useState } from 'react';
 
 const AppContent = () => {
     const { user, isLoading, isAuthenticated } = useAuth();
+    const [isDarkMode, setIsDarkMode] = useState(false);
+
+    useEffect(() => {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+            setIsDarkMode(true);
+            document.documentElement.classList.add('dark');
+        }
+    }, []);
+
+    const getBackgroundStyle = () => ({
+        background: isDarkMode 
+            ? 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)'
+            : 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
+        backgroundAttachment: 'fixed',
+        paddingTop: isAuthenticated ? '80px' : '0'
+    });
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-100 to-purple-100 
-                           dark:from-gray-900 dark:via-blue-900 dark:to-purple-900 
-                           flex items-center justify-center">
+            <div 
+                className="min-h-screen flex items-center justify-center"
+                style={getBackgroundStyle()}
+            >
                 <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -28,7 +47,7 @@ const AppContent = () => {
                     >
                         <FontAwesomeIcon icon={faSpinner} size="3x" />
                     </motion.div>
-                    <p className="text-gray-600 dark:text-gray-300 text-lg font-medium">
+                    <p className="text-white text-lg font-medium">
                         Loading your workspace...
                     </p>
                 </motion.div>
@@ -37,10 +56,10 @@ const AppContent = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-100 to-purple-100 
-                       dark:from-gray-900 dark:via-blue-900 dark:to-purple-900 
-                       transition-colors duration-300">
-            
+        <div 
+            className="min-h-screen"
+            style={getBackgroundStyle()}
+        >
             {isAuthenticated && <Header />}
             
             <main className="relative">

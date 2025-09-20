@@ -56,57 +56,111 @@ export const Header = () => {
             variants={headerVariants}
             initial="hidden"
             animate="visible"
-            className="fixed top-0 left-0 right-0 z-50 glass-nav"
+            className="glass-nav"
+            style={{
+                background: 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(25px)',
+                borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+            }}
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16">
-                    {/* Logo Section */}
+                    {/* Enhanced Logo Section */}
                     <motion.div
                         className="flex items-center space-x-3"
                         whileHover={{ scale: 1.02 }}
                         transition={{ type: "spring", stiffness: 400 }}
                     >
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <motion.div 
+                            className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg"
+                            style={{
+                                background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                                boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)'
+                            }}
+                            whileHover={{ 
+                                scale: 1.1,
+                                boxShadow: '0 6px 20px rgba(102, 126, 234, 0.6)'
+                            }}
+                        >
                             <FontAwesomeIcon 
                                 icon={faTasks} 
                                 className="text-white text-lg"
                             />
-                        </div>
-                        <span className="text-2xl font-display font-bold gradient-text">
-                            TodoApp
-                        </span>
+                        </motion.div>
+                        <motion.span 
+                            className="text-2xl font-display font-bold"
+                            style={{
+                                background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                backgroundClip: 'text'
+                            }}
+                            whileHover={{ scale: 1.05 }}
+                        >
+                            TodoApp Pro
+                        </motion.span>
                     </motion.div>
 
-                    {/* Right Section */}
+                    {/* Enhanced Right Section */}
                     <div className="flex items-center space-x-4">
-                        {/* Theme Toggle */}
+                        {/* Enhanced Theme Toggle */}
                         <motion.button
                             onClick={toggleTheme}
-                            className="p-2 rounded-xl bg-white/10 hover:bg-white/20 dark:bg-black/20 dark:hover:bg-black/30 transition-all duration-300"
-                            whileHover={{ scale: 1.05 }}
+                            className="p-2 rounded-xl transition-all duration-300"
+                            style={{
+                                background: 'rgba(255, 255, 255, 0.15)',
+                                border: '1px solid rgba(255, 255, 255, 0.25)',
+                                backdropFilter: 'blur(10px)'
+                            }}
+                            whileHover={{ 
+                                scale: 1.05,
+                                background: 'rgba(255, 255, 255, 0.25)',
+                                y: -2
+                            }}
                             whileTap={{ scale: 0.95 }}
                         >
                             <FontAwesomeIcon
                                 icon={isDarkMode ? faSun : faMoon}
-                                className="text-gray-700 dark:text-gray-300 w-5 h-5"
+                                className="w-5 h-5"
+                                style={{ color: isDarkMode ? '#fbbf24' : '#6366f1' }}
                             />
                         </motion.button>
 
-                        {/* User Dropdown */}
+                        {/* Enhanced User Dropdown */}
                         <div className="relative">
                             <motion.button
                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                                className="flex items-center space-x-3 px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 dark:bg-black/20 dark:hover:bg-black/30 transition-all duration-300"
-                                whileHover={{ scale: 1.02 }}
+                                className="flex items-center space-x-3 px-4 py-2 rounded-xl transition-all duration-300"
+                                style={{
+                                    background: 'rgba(255, 255, 255, 0.15)',
+                                    border: '1px solid rgba(255, 255, 255, 0.25)',
+                                    backdropFilter: 'blur(10px)'
+                                }}
+                                whileHover={{ 
+                                    scale: 1.02,
+                                    background: 'rgba(255, 255, 255, 0.25)',
+                                    y: -2
+                                }}
                                 whileTap={{ scale: 0.98 }}
                             >
-                                <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+                                <motion.div 
+                                    className="w-8 h-8 rounded-full flex items-center justify-center"
+                                    style={{
+                                        background: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
+                                        boxShadow: '0 4px 15px rgba(139, 92, 246, 0.3)'
+                                    }}
+                                    whileHover={{ scale: 1.1 }}
+                                >
                                     <FontAwesomeIcon 
                                         icon={faUser} 
                                         className="text-white text-sm"
                                     />
-                                </div>
-                                <span className="text-gray-700 dark:text-gray-300 font-medium">
+                                </motion.div>
+                                <span 
+                                    className="font-medium"
+                                    style={{ color: isDarkMode ? '#f9fafb' : '#1f2937' }}
+                                >
                                     {user?.firstName} {user?.lastName}
                                 </span>
                                 <motion.div
@@ -115,27 +169,45 @@ export const Header = () => {
                                 >
                                     <FontAwesomeIcon 
                                         icon={faChevronDown} 
-                                        className="text-gray-500 text-xs"
+                                        className="text-xs"
+                                        style={{ color: isDarkMode ? '#9ca3af' : '#6b7280' }}
                                     />
                                 </motion.div>
                             </motion.button>
 
-                            {/* Dropdown Menu */}
+                            {/* Enhanced Dropdown Menu */}
                             {isDropdownOpen && (
                                 <motion.div
                                     initial={{ opacity: 0, scale: 0.95, y: -10 }}
                                     animate={{ opacity: 1, scale: 1, y: 0 }}
                                     exit={{ opacity: 0, scale: 0.95, y: -10 }}
                                     transition={{ duration: 0.2 }}
-                                    className="absolute right-0 mt-2 w-48 glass rounded-xl shadow-xl py-2 z-50"
+                                    className="absolute right-0 mt-2 w-48 rounded-xl shadow-xl py-2 z-50"
+                                    style={{
+                                        background: 'rgba(255, 255, 255, 0.15)',
+                                        backdropFilter: 'blur(20px)',
+                                        border: '1px solid rgba(255, 255, 255, 0.25)',
+                                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.15)'
+                                    }}
                                 >
-                                    <button
+                                    <motion.button
                                         onClick={handleLogout}
-                                        className="w-full flex items-center space-x-3 px-4 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-white/10 dark:hover:bg-black/20 transition-all duration-200"
+                                        className="w-full flex items-center space-x-3 px-4 py-2 text-left transition-all duration-200"
+                                        style={{ 
+                                            color: isDarkMode ? '#f9fafb' : '#1f2937'
+                                        }}
+                                        whileHover={{ 
+                                            background: 'rgba(255, 255, 255, 0.1)',
+                                            x: 4
+                                        }}
                                     >
-                                        <FontAwesomeIcon icon={faSignOutAlt} className="w-4 h-4" />
+                                        <FontAwesomeIcon 
+                                            icon={faSignOutAlt} 
+                                            className="w-4 h-4" 
+                                            style={{ color: '#ef4444' }}
+                                        />
                                         <span>Sign out</span>
-                                    </button>
+                                    </motion.button>
                                 </motion.div>
                             )}
                         </div>
