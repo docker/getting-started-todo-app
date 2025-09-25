@@ -211,11 +211,31 @@ kubectl apply -f k8s-manifests.yaml
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+### How to Fork the Repository
+
+1. **Fork the repository**:
+   - Navigate to the [repository page](https://github.com/Kriaa89/getting-started-todo-app)
+   - Click the **"Fork"** button in the top-right corner of the page
+   - Select your GitHub account as the destination for the fork
+   - Wait for the forking process to complete
+
+2. **Clone your fork locally**:
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/getting-started-todo-app.git
+   cd getting-started-todo-app
+   ```
+
+3. **Add the original repository as upstream**:
+   ```bash
+   git remote add upstream https://github.com/Kriaa89/getting-started-todo-app.git
+   ```
+
+### Contributing Workflow
+
+4. Create a feature branch (`git checkout -b feature/amazing-feature`)
+5. Commit changes (`git commit -m 'Add amazing feature'`)
+6. Push to branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
 
 ## 📝 License
 
