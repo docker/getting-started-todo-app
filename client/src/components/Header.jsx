@@ -6,7 +6,8 @@ import {
     faSignOutAlt, 
     faChevronDown,
     faMoon,
-    faSun 
+    faSun,
+    faCheckCircle
 } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../contexts/AuthContext';
 
