@@ -4,6 +4,7 @@ import {
     faList,
     faSpinner,
 } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { AnimatePresence, motion } from 'framer-motion';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
