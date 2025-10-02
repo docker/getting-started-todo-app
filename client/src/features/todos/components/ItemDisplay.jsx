@@ -1,4 +1,10 @@
-import { faCheck, faEdit, faSave, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
+import {
+    faCheck,
+    faEdit,
+    faSave,
+    faTimes,
+    faTrash,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { motion } from 'framer-motion';
 import PropTypes from 'prop-types';
@@ -46,7 +52,7 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
     const removeItem = async () => {
         try {
             const response = await apiCall(`/api/items/${item.id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
             });
 
             if (!response.ok) {
@@ -121,13 +127,13 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
         animate: {
             opacity: 1,
             scale: 1,
-            transition: { duration: 0.3 }
+            transition: { duration: 0.3 },
         },
         exit: {
             opacity: 0,
             scale: 0.95,
-            transition: { duration: 0.2 }
-        }
+            transition: { duration: 0.2 },
+        },
     };
 
     return (
@@ -139,8 +145,9 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
             layout
             className="item-card-wrapper"
         >
-            <div className={`card-task ${item.completed ? 'completed' : ''} ${isEditing ? 'editing' : ''}`}>
-
+            <div
+                className={`card-task ${item.completed ? 'completed' : ''} ${isEditing ? 'editing' : ''}`}
+            >
                 <div className="flex items-center gap-md">
                     {/* Enhanced Checkbox */}
                     <motion.button
@@ -153,9 +160,12 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
                             <motion.div
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
-                                transition={{ type: "spring", stiffness: 500 }}
+                                transition={{ type: 'spring', stiffness: 500 }}
                             >
-                                <FontAwesomeIcon icon={faCheck} className="icon icon-sm" />
+                                <FontAwesomeIcon
+                                    icon={faCheck}
+                                    className="icon icon-sm"
+                                />
                             </motion.div>
                         )}
                     </motion.button>
@@ -176,13 +186,23 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
                             />
                         ) : (
                             <div>
-                                <h3 className={`task-title ${item.completed ? 'task-completed' : ''}`}>
+                                <h3
+                                    className={`task-title ${item.completed ? 'task-completed' : ''}`}
+                                >
                                     {item.name}
                                 </h3>
                                 <div className="task-meta-enhanced">
-                                    <span>📅 Created {formatRelativeTime(item.created_at)}</span>
+                                    <span>
+                                        📅 Created{' '}
+                                        {formatRelativeTime(item.created_at)}
+                                    </span>
                                     {item.updated_at !== item.created_at && (
-                                        <span>✏️ Updated {formatRelativeTime(item.updated_at)}</span>
+                                        <span>
+                                            ✏️ Updated{' '}
+                                            {formatRelativeTime(
+                                                item.updated_at,
+                                            )}
+                                        </span>
                                     )}
                                 </div>
                             </div>
@@ -200,7 +220,10 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
                                     whileTap={{ scale: 0.95 }}
                                     title="Save changes"
                                 >
-                                    <FontAwesomeIcon icon={faSave} className="icon icon-sm" />
+                                    <FontAwesomeIcon
+                                        icon={faSave}
+                                        className="icon icon-sm"
+                                    />
                                 </motion.button>
                                 <motion.button
                                     onClick={cancelEdit}
@@ -209,7 +232,10 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
                                     whileTap={{ scale: 0.95 }}
                                     title="Cancel editing"
                                 >
-                                    <FontAwesomeIcon icon={faTimes} className="icon icon-sm" />
+                                    <FontAwesomeIcon
+                                        icon={faTimes}
+                                        className="icon icon-sm"
+                                    />
                                 </motion.button>
                             </>
                         ) : (
@@ -221,7 +247,10 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
                                     whileTap={{ scale: 0.95 }}
                                     title="Edit task"
                                 >
-                                    <FontAwesomeIcon icon={faEdit} className="icon icon-sm" />
+                                    <FontAwesomeIcon
+                                        icon={faEdit}
+                                        className="icon icon-sm"
+                                    />
                                 </motion.button>
                                 <motion.button
                                     onClick={removeItem}
@@ -230,7 +259,10 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
                                     whileTap={{ scale: 0.95 }}
                                     title="Delete task"
                                 >
-                                    <FontAwesomeIcon icon={faTrash} className="icon icon-sm" />
+                                    <FontAwesomeIcon
+                                        icon={faTrash}
+                                        className="icon icon-sm"
+                                    />
                                 </motion.button>
                             </>
                         )}

@@ -9,7 +9,6 @@ import { LiveClock } from './components/LiveClock';
 import { Greeting } from './features/todos/components/Greeting';
 import { TodoListCard } from './features/todos/components/TodoListCard';
 
-
 const AppContent = () => {
     const { user, isLoading, isAuthenticated } = useAuth();
     const [isDarkMode, setIsDarkMode] = useState(false);
@@ -27,7 +26,7 @@ const AppContent = () => {
             ? 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)'
             : 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
         backgroundAttachment: 'fixed',
-        paddingTop: isAuthenticated ? '80px' : '0'
+        paddingTop: isAuthenticated ? '80px' : '0',
     });
 
     if (isLoading) {
@@ -43,7 +42,11 @@ const AppContent = () => {
                 >
                     <motion.div
                         animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        transition={{
+                            duration: 1,
+                            repeat: Infinity,
+                            ease: 'linear',
+                        }}
                         className="text-blue-500 mb-4"
                     >
                         <FontAwesomeIcon icon={faSpinner} size="3x" />
@@ -57,10 +60,7 @@ const AppContent = () => {
     }
 
     return (
-        <div
-            className="min-h-screen"
-            style={getBackgroundStyle()}
-        >
+        <div className="min-h-screen" style={getBackgroundStyle()}>
             {isAuthenticated && <Header />}
 
             <main className="relative">

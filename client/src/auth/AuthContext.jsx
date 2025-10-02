@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
             setUser(userData.user);
             localStorage.setItem('user', JSON.stringify(userData.user));
             localStorage.setItem('token', userData.token);
-            
+
             return { success: true };
         } catch (error) {
             return { success: false, error: error.message };
@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }) => {
             setUser(userData.user);
             localStorage.setItem('user', JSON.stringify(userData.user));
             localStorage.setItem('token', userData.token);
-            
+
             return { success: true };
         } catch (error) {
             return { success: false, error: error.message };
@@ -87,16 +87,21 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('token');
     };
 
-    const value = useMemo(() => ({
-        user,
-        isLoading,
-        login,
-        register,
-        logout,
-        isAuthenticated: !!user,
-    }), [user, isLoading]);
+    const value = useMemo(
+        () => ({
+            user,
+            isLoading,
+            login,
+            register,
+            logout,
+            isAuthenticated: !!user,
+        }),
+        [user, isLoading],
+    );
 
-    return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    return (
+        <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+    );
 };
 
 AuthProvider.propTypes = {

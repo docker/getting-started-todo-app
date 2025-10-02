@@ -54,17 +54,17 @@ export function AddItemForm({ onNewItem }) {
         visible: {
             opacity: 1,
             y: 0,
-            transition: { duration: 0.5 }
-        }
+            transition: { duration: 0.5 },
+        },
     };
 
     const buttonVariants = {
         idle: { scale: 1 },
         hover: {
             scale: 1.05,
-            transition: { type: "spring", stiffness: 400 }
+            transition: { type: 'spring', stiffness: 400 },
         },
-        tap: { scale: 0.95 }
+        tap: { scale: 0.95 },
     };
 
     return (
@@ -121,14 +121,18 @@ export function AddItemForm({ onNewItem }) {
                         whileTap="tap"
                         className={`w-full py-3 px-6 rounded-xl font-medium text-white shadow-lg
                                    transition-all duration-300 flex items-center justify-center space-x-2
-                                   ${submitting || !newItem.trim()
-                                     ? 'bg-gray-400 cursor-not-allowed'
-                                     : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:shadow-xl'
+                                   ${
+                                       submitting || !newItem.trim()
+                                           ? 'bg-gray-400 cursor-not-allowed'
+                                           : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:shadow-xl'
                                    }`}
                     >
                         {submitting ? (
                             <>
-                                <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
+                                <FontAwesomeIcon
+                                    icon={faSpinner}
+                                    className="animate-spin"
+                                />
                                 <span>Adding task...</span>
                             </>
                         ) : (
