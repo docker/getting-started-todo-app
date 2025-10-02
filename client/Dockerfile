@@ -1,27 +1,26 @@
-# Use Node.js Alpine image for smaller size
+###################################################
+# Frontend Dockerfile - Vite React Dev
+###################################################
 FROM node:22-alpine
-
-# Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Install dependencies as root
+COPY package.json package-lock.json ./
+RUN npm ci
 
-# Install dependencies
-RUN npm ci --only=production=false
-
-# Copy source code
+# Copy app source
 COPY . .
 
-# Expose port 5173 (Vite default dev server port)
-EXPOSE 5173
+# Create non-root user and set ownership
+RUN addgroup -S nodejs -g 1001 \
+    && adduser -S reactjs -u 1001 -G nodejs \
+    && chown -R reactjs:nodejs /app
 
-# Create non-root user for security and change ownership
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S reactjs -u 1001 && \
-    chown -R reactjs:nodejs /app
-
+# Switch to non-root user
 USER reactjs
 
-# Start the development server
-CMD ["npm", "run", "dev"]
+# Expose Vite dev server port
+EXPOSE 5173
+
+# Start dev server
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

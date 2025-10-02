@@ -77,8 +77,10 @@ services:
     depends_on:
       - backend
     volumes:
-      - ./client:/app
-      - /app/node_modules
+      - ./client/src:/app/src
+      - ./client/public:/app/public
+      - ./client/index.html:/app/index.html
+      - ./client/vite.config.js:/app/vite.config.js
     security_opt:
       - no-new-privileges:true
     cap_drop:
