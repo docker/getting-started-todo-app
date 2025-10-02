@@ -1,25 +1,28 @@
+import { faCheck, faClock, faList, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { AnimatePresence, motion } from 'framer-motion';
+import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faList, faCheck, faClock, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { apiCall } from '../../../services/api';
 import { AddItemForm } from './AddNewItemForm';
-import { ItemDisplay } from './ItemDisplay';
-import { TodoStats } from './TodoStats';
-import { TodoStatsEnhanced } from './TodoStatsEnhanced';
 import { EmptyState } from './EmptyState';
-import { apiCall } from '../utils/api';
+import { ItemDisplay } from './ItemDisplay';
 
 const FILTER_OPTIONS = {
     ALL: 'all',
-    ACTIVE: 'active', 
+    ACTIVE: 'active',
     COMPLETED: 'completed'
 };
 
+/**
+ * TodoListCard component - Main container for the todo list application
+ * Handles filtering, CRUD operations, and displays todo items
+ */
 export function TodoListCard() {
     const [items, setItems] = useState(null);
     const [filter, setFilter] = useState(FILTER_OPTIONS.ALL);
 
     useEffect(() => {
+        /** Fetches all todo items from the API */
         const fetchItems = async () => {
             try {
                 const response = await apiCall('/api/items');
@@ -60,9 +63,10 @@ export function TodoListCard() {
         [items],
     );
 
+    /** Filters items based on the current filter state */
     const getFilteredItems = () => {
         if (!items) return [];
-        
+
         switch (filter) {
             case FILTER_OPTIONS.ACTIVE:
                 return items.filter(item => !item.completed);
@@ -95,12 +99,13 @@ export function TodoListCard() {
         }
     };
 
+    /** Filter button component for All/Active/Completed filters */
     const FilterButton = ({ filterType, label, icon, count }) => (
         <motion.button
             onClick={() => setFilter(filterType)}
             className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-medium transition-all duration-300
-                       ${filter === filterType 
-                         ? 'bg-blue-500 text-white shadow-lg' 
+                       ${filter === filterType
+                         ? 'bg-blue-500 text-white shadow-lg'
                          : 'bg-white/50 dark:bg-black/50 text-gray-600 dark:text-gray-400 hover:bg-white/70 dark:hover:bg-black/70'
                        }`}
             whileHover={{ scale: 1.05 }}
@@ -109,14 +114,21 @@ export function TodoListCard() {
             <FontAwesomeIcon icon={icon} className="w-4 h-4" />
             <span>{label}</span>
             <span className={`text-xs px-2 py-1 rounded-full ${
-                filter === filterType 
-                ? 'bg-white/20' 
+                filter === filterType
+                ? 'bg-white/20'
                 : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
             }`}>
                 {count}
             </span>
         </motion.button>
     );
+
+    FilterButton.propTypes = {
+        filterType: PropTypes.string.isRequired,
+        label: PropTypes.string.isRequired,
+        icon: PropTypes.object.isRequired,
+        count: PropTypes.number.isRequired,
+    };
 
     if (items === null) {
         return (
@@ -140,8 +152,7 @@ export function TodoListCard() {
             animate="visible"
         >
             <AddItemForm onNewItem={onNewItem} />
-            <TodoStatsEnhanced items={items} />
-            
+
             {/* Filter Buttons */}
             {items.length > 0 && (
                 <motion.div
@@ -150,19 +161,19 @@ export function TodoListCard() {
                     initial="hidden"
                     animate="visible"
                 >
-                    <FilterButton 
+                    <FilterButton
                         filterType={FILTER_OPTIONS.ALL}
                         label="All"
                         icon={faList}
                         count={items.length}
                     />
-                    <FilterButton 
+                    <FilterButton
                         filterType={FILTER_OPTIONS.ACTIVE}
                         label="Active"
                         icon={faClock}
                         count={items.filter(item => !item.completed).length}
                     />
-                    <FilterButton 
+                    <FilterButton
                         filterType={FILTER_OPTIONS.COMPLETED}
                         label="Completed"
                         icon={faCheck}
@@ -171,7 +182,7 @@ export function TodoListCard() {
                 </motion.div>
             )}
 
-            {/* Todo List or Empty State */}
+            {/* Display filtered items or empty state */}
             {filteredItems.length === 0 ? (
                 items.length === 0 ? (
                     <EmptyState />
@@ -199,7 +210,7 @@ export function TodoListCard() {
                                 initial={{ opacity: 0, y: 20, scale: 0.95 }}
                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                 exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                                transition={{ 
+                                transition={{
                                     duration: 0.3,
                                     delay: index * 0.05
                                 }}

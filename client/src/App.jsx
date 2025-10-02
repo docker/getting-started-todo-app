@@ -1,13 +1,14 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { TodoListCard } from './components/TodoListCard';
-import { Greeting } from './components/Greeting';
-import { LiveClock } from './components/LiveClock';
-import { Header } from './components/Header';
-import { AuthForm } from './components/AuthForm';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { AuthProvider, useAuth } from './auth/AuthContext';
+import { AuthForm } from './auth/components/AuthForm';
+import { Header } from './components/Header';
+import { LiveClock } from './components/LiveClock';
+import { Greeting } from './features/todos/components/Greeting';
+import { TodoListCard } from './features/todos/components/TodoListCard';
+
 
 const AppContent = () => {
     const { user, isLoading, isAuthenticated } = useAuth();
@@ -22,7 +23,7 @@ const AppContent = () => {
     }, []);
 
     const getBackgroundStyle = () => ({
-        background: isDarkMode 
+        background: isDarkMode
             ? 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)'
             : 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)',
         backgroundAttachment: 'fixed',
@@ -31,7 +32,7 @@ const AppContent = () => {
 
     if (isLoading) {
         return (
-            <div 
+            <div
                 className="min-h-screen flex items-center justify-center"
                 style={getBackgroundStyle()}
             >
@@ -56,12 +57,12 @@ const AppContent = () => {
     }
 
     return (
-        <div 
+        <div
             className="min-h-screen"
             style={getBackgroundStyle()}
         >
             {isAuthenticated && <Header />}
-            
+
             <main className="relative">
                 <AnimatePresence mode="wait">
                     {!isAuthenticated ? (

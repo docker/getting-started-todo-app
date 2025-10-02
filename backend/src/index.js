@@ -2,15 +2,23 @@ const express = require('express');
 const app = express();
 const db = require('./persistence');
 const getGreeting = require('./routes/getGreeting');
-const getItems = require('./routes/getItems');
-const addItem = require('./routes/addItem');
-const updateItem = require('./routes/updateItem');
-const deleteItem = require('./routes/deleteItem');
+const { getItems, addItem, updateItem, deleteItem } = require('./routes/todo/items');
 const { register, login } = require('./routes/auth');
 const { authenticateToken } = require('./middleware/auth');
 
 app.use(express.json());
-app.use(express.static(__dirname + '/static'));
+
+// Serve static files only in production mode
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(__dirname + '/static'));
+
+    // Serve React app for any non-API routes in production
+    app.get('*', (req, res) => {
+        if (!req.path.startsWith('/api')) {
+            res.sendFile(__dirname + '/static/index.html');
+        }
+    });
+}
 
 // Health check endpoint for container health monitoring
 app.get('/api/health', (req, res) => {

@@ -1,14 +1,24 @@
-import { useState } from 'react';
+import { faCheck, faEdit, faSave, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { motion } from 'framer-motion';
 import PropTypes from 'prop-types';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faEdit, faSave, faTimes, faCheck } from '@fortawesome/free-solid-svg-icons';
-import { apiCall } from '../utils/api';
+import { useState } from 'react';
+import { apiCall } from '../../../services/api';
 
+/**
+ * ItemDisplay component - Displays a single todo item with edit, delete, and completion toggle
+ * @param {Object} props - Component props
+ * @param {Object} props.item - The todo item object
+ * @param {Function} props.onItemUpdate - Callback when item is updated
+ * @param {Function} props.onItemRemoval - Callback when item is removed
+ */
 export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
     const [isEditing, setIsEditing] = useState(false);
     const [editName, setEditName] = useState(item.name);
 
+    /**
+     * Toggles the completion status of the todo item
+     */
     const toggleCompletion = async () => {
         try {
             const response = await apiCall(`/api/items/${item.id}`, {
@@ -18,11 +28,11 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
                     completed: !item.completed,
                 }),
             });
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const updatedItem = await response.json();
             onItemUpdate(updatedItem);
         } catch (error) {
@@ -30,25 +40,31 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
         }
     };
 
+    /**
+     * Removes the todo item
+     */
     const removeItem = async () => {
         try {
-            const response = await apiCall(`/api/items/${item.id}`, { 
-                method: 'DELETE' 
+            const response = await apiCall(`/api/items/${item.id}`, {
+                method: 'DELETE'
             });
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             onItemRemoval(item);
         } catch (error) {
             console.error('Error removing item:', error);
         }
     };
 
+    /**
+     * Saves the edited todo item name
+     */
     const saveEdit = async () => {
         if (editName.trim() === '') return;
-        
+
         try {
             const response = await apiCall(`/api/items/${item.id}`, {
                 method: 'PUT',
@@ -57,11 +73,11 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
                     completed: item.completed,
                 }),
             });
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const updatedItem = await response.json();
             onItemUpdate(updatedItem);
             setIsEditing(false);
@@ -72,11 +88,19 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
         }
     };
 
+    /**
+     * Cancels the editing mode and reverts changes
+     */
     const cancelEdit = () => {
         setEditName(item.name);
         setIsEditing(false);
     };
 
+    /**
+     * Formats a date string into a relative time string (e.g., "2h ago").
+     * @param {string} dateString - The ISO date string to format.
+     * @returns {string} The formatted relative time.
+     */
     const formatRelativeTime = (dateString) => {
         if (!dateString) return '';
         const date = new Date(dateString);
@@ -94,13 +118,13 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
 
     const itemVariants = {
         initial: { opacity: 0, scale: 0.95 },
-        animate: { 
-            opacity: 1, 
+        animate: {
+            opacity: 1,
             scale: 1,
             transition: { duration: 0.3 }
         },
-        exit: { 
-            opacity: 0, 
+        exit: {
+            opacity: 0,
             scale: 0.95,
             transition: { duration: 0.2 }
         }
@@ -116,7 +140,7 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
             className="item-card-wrapper"
         >
             <div className={`card-task ${item.completed ? 'completed' : ''} ${isEditing ? 'editing' : ''}`}>
-                
+
                 <div className="flex items-center gap-md">
                     {/* Enhanced Checkbox */}
                     <motion.button
@@ -143,12 +167,11 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
                                 type="text"
                                 value={editName}
                                 onChange={(e) => setEditName(e.target.value)}
-                                onKeyPress={(e) => {
+                                onKeyDown={(e) => {
                                     if (e.key === 'Enter') saveEdit();
                                     if (e.key === 'Escape') cancelEdit();
                                 }}
                                 className="form-input w-full"
-                                autoFocus
                                 placeholder="Edit task name..."
                             />
                         ) : (
@@ -217,18 +240,6 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
         </motion.div>
     );
 }
-
-ItemDisplay.propTypes = {
-    item: PropTypes.shape({
-        id: PropTypes.string,
-        name: PropTypes.string,
-        completed: PropTypes.bool,
-        created_at: PropTypes.string,
-        updated_at: PropTypes.string,
-    }),
-    onItemUpdate: PropTypes.func,
-    onItemRemoval: PropTypes.func,
-};
 
 ItemDisplay.propTypes = {
     item: PropTypes.shape({

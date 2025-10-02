@@ -1,8 +1,8 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { faEye, faEyeSlash, faSpinner, faUser } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner, faEye, faEyeSlash, faUser, faLock } from '@fortawesome/free-solid-svg-icons';
-import { useAuth } from '../contexts/AuthContext';
+import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { useAuth } from '../AuthContext';
 
 export function AuthForm() {
     const [isLogin, setIsLogin] = useState(true);
@@ -79,11 +79,11 @@ export function AuthForm() {
                     >
                         <FontAwesomeIcon icon={faUser} className="text-white text-2xl" />
                     </motion.div>
-                    
+
                     <h1 className="text-3xl font-display font-bold gradient-text mb-2">
                         {isLogin ? 'Welcome Back' : 'Join TodoApp'}
                     </h1>
-                    
+
                     <p className="text-gray-600 dark:text-gray-300">
                         {isLogin ? 'Sign in to continue your productivity journey' : 'Create your account to get started'}
                     </p>
@@ -120,8 +120,8 @@ export function AuthForm() {
                                     value={formData.firstName}
                                     onChange={handleInputChange}
                                     required={!isLogin}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                                             bg-white/70 dark:bg-black/70 text-gray-800 dark:text-gray-200 
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600
+                                             bg-white/70 dark:bg-black/70 text-gray-800 dark:text-gray-200
                                              placeholder-gray-500 dark:placeholder-gray-400
                                              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                                              transition-all duration-300"
@@ -138,8 +138,8 @@ export function AuthForm() {
                                     value={formData.lastName}
                                     onChange={handleInputChange}
                                     required={!isLogin}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                                             bg-white/70 dark:bg-black/70 text-gray-800 dark:text-gray-200 
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600
+                                             bg-white/70 dark:bg-black/70 text-gray-800 dark:text-gray-200
                                              placeholder-gray-500 dark:placeholder-gray-400
                                              focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                                              transition-all duration-300"
@@ -160,8 +160,8 @@ export function AuthForm() {
                             value={formData.email}
                             onChange={handleInputChange}
                             required
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                                     bg-white/70 dark:bg-black/70 text-gray-800 dark:text-gray-200 
+                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600
+                                     bg-white/70 dark:bg-black/70 text-gray-800 dark:text-gray-200
                                      placeholder-gray-500 dark:placeholder-gray-400
                                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                                      transition-all duration-300"
@@ -181,8 +181,8 @@ export function AuthForm() {
                                 value={formData.password}
                                 onChange={handleInputChange}
                                 required
-                                className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 dark:border-gray-600 
-                                         bg-white/70 dark:bg-black/70 text-gray-800 dark:text-gray-200 
+                                className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 dark:border-gray-600
+                                         bg-white/70 dark:bg-black/70 text-gray-800 dark:text-gray-200
                                          placeholder-gray-500 dark:placeholder-gray-400
                                          focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                                          transition-all duration-300"
@@ -204,8 +204,8 @@ export function AuthForm() {
                         disabled={isSubmitting}
                         className={`w-full py-3 px-6 rounded-xl font-semibold text-white shadow-lg
                                    transition-all duration-300 flex items-center justify-center space-x-2
-                                   ${isSubmitting 
-                                     ? 'bg-gray-400 cursor-not-allowed' 
+                                   ${isSubmitting
+                                     ? 'bg-gray-400 cursor-not-allowed'
                                      : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:shadow-xl transform hover:scale-[1.02]'
                                    }`}
                         whileHover={!isSubmitting ? { scale: 1.02 } : {}}

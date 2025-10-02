@@ -1,16 +1,16 @@
 ###################################################
 # Secure Docker Compose for Todo App
-# 
+#
 # Production-ready setup with security hardening
 ###################################################
 
 services:
   ###################################################
-  # Service: backend (production)
+  # Service: backend (development - API only)
   ###################################################
   backend:
     build:
-      context: ./
+      context: ./backend
       dockerfile: Dockerfile
     environment:
       MYSQL_HOST: mysql
@@ -23,6 +23,8 @@ services:
         condition: service_healthy
     ports:
       - "3000:3000"
+    volumes:
+      - ./backend/src:/usr/local/app/src
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -40,7 +42,7 @@ services:
     image: mysql:9.3
     volumes:
       - todo-mysql-data:/var/lib/mysql
-    environment: 
+    environment:
       MYSQL_ROOT_PASSWORD: secret
       MYSQL_DATABASE: todos
     healthcheck:

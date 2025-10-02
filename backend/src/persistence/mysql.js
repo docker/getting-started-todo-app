@@ -35,69 +35,51 @@ async function init() {
         password,
         database,
         charset: 'utf8mb4',
-    });
+    }).promise();
 
-    return new Promise((acc, rej) => {
-        // Create todo_items table
-        pool.query(
-            `CREATE TABLE IF NOT EXISTS todo_items (
-                id varchar(36) PRIMARY KEY, 
-                name varchar(255) NOT NULL, 
-                completed boolean DEFAULT FALSE,
-                user_id varchar(36),
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            ) DEFAULT CHARSET utf8mb4`,
-            (err) => {
-                if (err) return rej(err);
+    await pool.query(
+        `CREATE TABLE IF NOT EXISTS todo_items (
+            id varchar(36) PRIMARY KEY,
+            name varchar(255) NOT NULL,
+            completed boolean DEFAULT FALSE,
+            user_id varchar(36),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) DEFAULT CHARSET utf8mb4`
+    );
 
-                // Create users table
-                pool.query(
-                    `CREATE TABLE IF NOT EXISTS users (
-                        id varchar(36) PRIMARY KEY,
-                        first_name varchar(100) NOT NULL,
-                        last_name varchar(100) NOT NULL,
-                        email varchar(255) UNIQUE NOT NULL,
-                        password_hash varchar(255) NOT NULL,
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-                    ) DEFAULT CHARSET utf8mb4`,
-                    (userErr) => {
-                        if (userErr) return rej(userErr);
+    // Initialize database schema: create users table
+    await pool.query(
+        `CREATE TABLE IF NOT EXISTS users (
+            id varchar(36) PRIMARY KEY,
+            first_name varchar(100) NOT NULL,
+            last_name varchar(100) NOT NULL,
+            email varchar(255) UNIQUE NOT NULL,
+            password_hash varchar(255) NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) DEFAULT CHARSET utf8mb4`
+    );
 
-                        // Check if user_id column exists in todo_items and add it if it doesn't
-                        pool.query(
-                            `SHOW COLUMNS FROM todo_items LIKE 'user_id'`,
-                            (showErr, rows) => {
-                                if (showErr) {
-                                    console.log(`Connected to mysql db at host ${HOST}`);
-                                    return acc();
-                                }
-                                
-                                if (rows.length === 0) {
-                                    // Add user_id column if it doesn't exist
-                                    pool.query(
-                                        `ALTER TABLE todo_items ADD COLUMN user_id varchar(36)`,
-                                        (alterErr) => {
-                                            if (alterErr) console.log('Note: user_id column may already exist');
-                                            console.log(`Connected to mysql db at host ${HOST}`);
-                                            acc();
-                                        }
-                                    );
-                                } else {
-                                    console.log(`Connected to mysql db at host ${HOST}`);
-                                    acc();
-                                }
-                            }
-                        );
-                    }
-                );
-            },
-        );
-    });
+    // Verify and migrate: ensure user_id column exists in todo_items table
+    try {
+        const [rows] = await pool.query(`SHOW COLUMNS FROM todo_items LIKE 'user_id'`);
+
+        if (rows.length === 0) {
+            // Add user_id column if it doesn't exist
+            try {
+                await pool.query(`ALTER TABLE todo_items ADD COLUMN user_id varchar(36)`);
+            } catch (alterErr) {
+                console.log('Note: user_id column may already exist');
+            }
+        }
+    } catch (showErr) {
+    }
+
+    console.log(`Connected to mysql db at host ${HOST}`);
 }
 
-async function teardown() {
+function teardown() {
     return new Promise((acc, rej) => {
         pool.end((err) => {
             if (err) rej(err);
@@ -106,7 +88,7 @@ async function teardown() {
     });
 }
 
-async function getItems() {
+function getItems() {
     return new Promise((acc, rej) => {
         pool.query('SELECT * FROM todo_items', (err, rows) => {
             if (err) return rej(err);
@@ -120,7 +102,7 @@ async function getItems() {
     });
 }
 
-async function getItem(id) {
+function getItem(id) {
     return new Promise((acc, rej) => {
         pool.query('SELECT * FROM todo_items WHERE id=?', [id], (err, rows) => {
             if (err) return rej(err);
@@ -134,7 +116,8 @@ async function getItem(id) {
     });
 }
 
-async function storeItem(item) {
+// skipcq: JS-0116
+function storeItem(item) {
     return new Promise((acc, rej) => {
         // Try inserting with timestamps first, fallback to basic insert if it fails
         pool.query(
@@ -159,7 +142,7 @@ async function storeItem(item) {
     });
 }
 
-async function updateItem(id, item) {
+function updateItem(id, item) {
     return new Promise((acc, rej) => {
         // Try updating with timestamps first, fallback to basic update if it fails
         pool.query(
@@ -184,7 +167,8 @@ async function updateItem(id, item) {
     });
 }
 
-async function removeItem(id) {
+// skipcq: JS-0116
+function removeItem(id) {
     return new Promise((acc, rej) => {
         pool.query('DELETE FROM todo_items WHERE id = ?', [id], (err) => {
             if (err) return rej(err);
@@ -194,7 +178,8 @@ async function removeItem(id) {
 }
 
 // User management functions
-async function createUser(user) {
+// skipcq: JS-0116
+function createUser(user) {
     return new Promise((acc, rej) => {
         pool.query(
             'INSERT INTO users (id, first_name, last_name, email, password_hash) VALUES (?, ?, ?, ?, ?)',
@@ -207,7 +192,7 @@ async function createUser(user) {
     });
 }
 
-async function getUserByEmail(email) {
+function getUserByEmail(email) {
     return new Promise((acc, rej) => {
         pool.query('SELECT * FROM users WHERE email = ?', [email], (err, rows) => {
             if (err) return rej(err);
@@ -216,7 +201,7 @@ async function getUserByEmail(email) {
     });
 }
 
-async function getUserById(id) {
+function getUserById(id) {
     return new Promise((acc, rej) => {
         pool.query('SELECT * FROM users WHERE id = ?', [id], (err, rows) => {
             if (err) return rej(err);
@@ -226,7 +211,7 @@ async function getUserById(id) {
 }
 
 // Update existing functions to filter by user
-async function getItemsByUser(userId) {
+function getItemsByUser(userId) {
     return new Promise((acc, rej) => {
         pool.query('SELECT * FROM todo_items WHERE user_id = ?', [userId], (err, rows) => {
             if (err) return rej(err);
@@ -240,14 +225,26 @@ async function getItemsByUser(userId) {
     });
 }
 
-async function storeItemForUser(item, userId) {
+function storeItemForUser(item, userId) {
     return new Promise((acc, rej) => {
+        // Try inserting with timestamps first, fallback to basic insert if it fails
         pool.query(
-            'INSERT INTO todo_items (id, name, completed, user_id) VALUES (?, ?, ?, ?)',
+            'INSERT INTO todo_items (id, name, completed, user_id, created_at, updated_at) VALUES (?, ?, ?, ?, NOW(), NOW())',
             [item.id, item.name, item.completed ? 1 : 0, userId],
             (err) => {
-                if (err) return rej(err);
-                acc();
+                if (err) {
+                    // Fallback to basic insert without timestamps
+                    pool.query(
+                        'INSERT INTO todo_items (id, name, completed, user_id) VALUES (?, ?, ?, ?)',
+                        [item.id, item.name, item.completed ? 1 : 0, userId],
+                        (fallbackErr) => {
+                            if (fallbackErr) return rej(fallbackErr);
+                            acc();
+                        }
+                    );
+                } else {
+                    acc();
+                }
             }
         );
     });

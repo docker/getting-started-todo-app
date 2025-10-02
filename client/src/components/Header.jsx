@@ -1,15 +1,15 @@
-import { motion } from 'framer-motion';
-import { useState, useEffect, useRef } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-    faUser, 
-    faSignOutAlt, 
+import {
+    faCheckCircle,
     faChevronDown,
     faMoon,
+    faSignOutAlt,
     faSun,
-    faCheckCircle
+    faUser
 } from '@fortawesome/free-solid-svg-icons';
-import { useAuth } from '../contexts/AuthContext';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { motion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { useAuth } from '../auth/AuthContext';
 
 const headerVariants = {
     hidden: { opacity: 0, y: -20 },
@@ -56,7 +56,7 @@ export const Header = () => {
     const toggleTheme = () => {
         const newMode = !isDarkMode;
         setIsDarkMode(newMode);
-        
+
         if (newMode) {
             document.documentElement.classList.add('dark');
             localStorage.setItem('theme', 'dark');
@@ -87,23 +87,23 @@ export const Header = () => {
                         whileHover={{ scale: 1.02 }}
                         transition={{ type: "spring", stiffness: 400 }}
                     >
-                        <motion.div 
+                        <motion.div
                             className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg"
                             style={{
                                 background: 'linear-gradient(135deg, #667eea, #764ba2)',
                                 boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)'
                             }}
-                            whileHover={{ 
+                            whileHover={{
                                 scale: 1.1,
                                 boxShadow: '0 6px 20px rgba(102, 126, 234, 0.6)'
                             }}
                         >
-                            <FontAwesomeIcon 
-                                icon={faCheckCircle} 
+                            <FontAwesomeIcon
+                                icon={faCheckCircle}
                                 className="text-white text-lg"
                             />
                         </motion.div>
-                        <motion.span 
+                        <motion.span
                             className="text-2xl font-display font-bold"
                             style={{
                                 background: 'linear-gradient(135deg, #667eea, #764ba2)',
@@ -123,7 +123,7 @@ export const Header = () => {
                         <motion.button
                             onClick={toggleTheme}
                             className="header-btn header-theme-toggle"
-                            whileHover={{ 
+                            whileHover={{
                                 scale: 1.05,
                                 y: -2
                             }}
@@ -141,18 +141,18 @@ export const Header = () => {
                             <motion.button
                                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                                 className="header-btn user-dropdown-btn"
-                                whileHover={{ 
+                                whileHover={{
                                     scale: 1.02,
                                     y: -2
                                 }}
                                 whileTap={{ scale: 0.98 }}
                             >
-                                <motion.div 
+                                <motion.div
                                     className="user-avatar"
                                     whileHover={{ scale: 1.1 }}
                                 >
-                                    <FontAwesomeIcon 
-                                        icon={faUser} 
+                                    <FontAwesomeIcon
+                                        icon={faUser}
                                         className="text-white text-sm"
                                     />
                                 </motion.div>
@@ -164,8 +164,8 @@ export const Header = () => {
                                     animate={{ rotate: isDropdownOpen ? 180 : 0 }}
                                     transition={{ duration: 0.2 }}
                                 >
-                                    <FontAwesomeIcon 
-                                        icon={faChevronDown} 
+                                    <FontAwesomeIcon
+                                        icon={faChevronDown}
                                         className="icon icon-xs"
                                     />
                                 </motion.div>
@@ -200,8 +200,8 @@ export const Header = () => {
                                         <motion.button
                                             onClick={handleLogout}
                                             className="dropdown-item dropdown-item-logout"
-                                            whileHover={{ 
-                                                x: 4, 
+                                            whileHover={{
+                                                x: 4,
                                                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
                                                 scale: 1.02
                                             }}

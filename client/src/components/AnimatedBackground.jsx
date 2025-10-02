@@ -4,7 +4,7 @@ import './AnimatedBackground.scss';
 export const AnimatedBackground = ({ children }) => {
     // Floating particles animation
     const particles = Array.from({ length: 20 }, (_, i) => i);
-    
+
     const particleVariants = {
         animate: {
             y: [0, -100, 0],
@@ -28,6 +28,7 @@ export const AnimatedBackground = ({ children }) => {
                 "linear-gradient(45deg, #4facfe 0%, #00f2fe 100%)",
                 "linear-gradient(45deg, #43e97b 0%, #38f9d7 100%)",
                 "linear-gradient(45deg, #667eea 0%, #764ba2 100%)",
+                ""
             ],
             transition: {
                 duration: 20,
@@ -60,7 +61,7 @@ export const AnimatedBackground = ({ children }) => {
                 variants={gradientVariants}
                 animate="animate"
             />
-            
+
             {/* Floating particles */}
             <div className="particles-container">
                 {particles.map((particle) => (
@@ -102,7 +103,7 @@ export const AnimatedBackground = ({ children }) => {
 
             {/* Glass morphism overlay */}
             <div className="glass-overlay" />
-            
+
             {/* Content */}
             <div className="content-wrapper">
                 {children}

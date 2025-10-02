@@ -1,18 +1,28 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faSpinner } from '@fortawesome/free-solid-svg-icons';
-import PropTypes from 'prop-types';
-import { apiCall } from '../utils/api';
+import { motion } from 'framer-motion';
+import { PropTypes } from 'prop-types';
+import { useState } from 'react';
+import { apiCall } from '../../../services/api';
 
+/**
+ * Renders a form to add new items with animated UI.
+ * @param {Object} props - The component props.
+ * @param {function} props.onNewItem - Callback to handle the newly added item.
+ * @returns {JSX.Element} - The AddItemForm component.
+ */
 export function AddItemForm({ onNewItem }) {
     const [newItem, setNewItem] = useState('');
     const [submitting, setSubmitting] = useState(false);
 
+    /**
+     * Submits a new item to the API and handles state updates.
+     * @param {Object} e - The form submission event.
+     * @returns {Promise<void>} - A promise that resolves when the submission is complete.
+     */
     const submitNewItem = async (e) => {
         e.preventDefault();
         if (!newItem.trim()) return;
-        
+
         setSubmitting(true);
 
         try {
@@ -20,7 +30,7 @@ export function AddItemForm({ onNewItem }) {
                 method: 'POST',
                 body: JSON.stringify({ name: newItem.trim() }),
             });
-            
+
             const item = await response.json();
             onNewItem(item);
             setNewItem('');
@@ -31,7 +41,8 @@ export function AddItemForm({ onNewItem }) {
         }
     };
 
-    const handleKeyPress = (e) => {
+    /** Handles Enter key press to submit the form */
+    const handleKeyDown = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             submitNewItem(e);
@@ -49,7 +60,7 @@ export function AddItemForm({ onNewItem }) {
 
     const buttonVariants = {
         idle: { scale: 1 },
-        hover: { 
+        hover: {
             scale: 1.05,
             transition: { type: "spring", stiffness: 400 }
         },
@@ -79,11 +90,11 @@ export function AddItemForm({ onNewItem }) {
                             type="text"
                             value={newItem}
                             onChange={(e) => setNewItem(e.target.value)}
-                            onKeyPress={handleKeyPress}
+                            onKeyDown={handleKeyDown}
                             placeholder="e.g. Buy groceries, Call mom, Finish project..."
                             disabled={submitting}
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 
-                                     bg-white/50 dark:bg-black/50 text-gray-800 dark:text-gray-200 
+                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600
+                                     bg-white/50 dark:bg-black/50 text-gray-800 dark:text-gray-200
                                      placeholder-gray-500 dark:placeholder-gray-400
                                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
                                      transition-all duration-300"
@@ -110,8 +121,8 @@ export function AddItemForm({ onNewItem }) {
                         whileTap="tap"
                         className={`w-full py-3 px-6 rounded-xl font-medium text-white shadow-lg
                                    transition-all duration-300 flex items-center justify-center space-x-2
-                                   ${submitting || !newItem.trim() 
-                                     ? 'bg-gray-400 cursor-not-allowed' 
+                                   ${submitting || !newItem.trim()
+                                     ? 'bg-gray-400 cursor-not-allowed'
                                      : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:shadow-xl'
                                    }`}
                     >
@@ -135,8 +146,4 @@ export function AddItemForm({ onNewItem }) {
 
 AddItemForm.propTypes = {
     onNewItem: PropTypes.func.isRequired,
-};
-
-AddItemForm.propTypes = {
-    onNewItem: PropTypes.func,
 };

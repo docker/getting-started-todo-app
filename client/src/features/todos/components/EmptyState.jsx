@@ -1,5 +1,10 @@
 import { motion } from 'framer-motion';
 
+/**
+ * Renders an empty state component with animation for user engagement.
+ *
+ * @returns {JSX.Element} The animated empty state UI.
+ */
 export function EmptyState() {
     const containerVariants = {
         hidden: { opacity: 0, scale: 0.8 },
@@ -39,51 +44,51 @@ export function EmptyState() {
             >
                 ✨
             </motion.div>
-            
+
             <h3 className="text-2xl font-display font-semibold text-gray-700 dark:text-gray-300 mb-3">
                 Ready to get organized?
             </h3>
-            
+
             <p className="text-gray-600 dark:text-gray-400 text-lg mb-6 max-w-md mx-auto">
                 Add your first task above and start building productive habits!
             </p>
-            
+
             <div className="flex justify-center space-x-4 text-4xl">
                 <motion.span
-                    animate={{ 
+                    animate={{
                         scale: [1, 1.2, 1],
-                        rotate: [0, 10, -10, 0] 
+                        rotate: [0, 10, -10, 0]
                     }}
-                    transition={{ 
-                        duration: 2, 
-                        repeat: Infinity, 
-                        delay: 0 
+                    transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        delay: 0
                     }}
                 >
                     📝
                 </motion.span>
                 <motion.span
-                    animate={{ 
+                    animate={{
                         scale: [1, 1.2, 1],
-                        rotate: [0, -10, 10, 0] 
+                        rotate: [0, -10, 10, 0]
                     }}
-                    transition={{ 
-                        duration: 2, 
-                        repeat: Infinity, 
-                        delay: 0.5 
+                    transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        delay: 0.5
                     }}
                 >
                     🎯
                 </motion.span>
                 <motion.span
-                    animate={{ 
+                    animate={{
                         scale: [1, 1.2, 1],
-                        rotate: [0, 10, -10, 0] 
+                        rotate: [0, 10, -10, 0]
                     }}
-                    transition={{ 
-                        duration: 2, 
-                        repeat: Infinity, 
-                        delay: 1 
+                    transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        delay: 1
                     }}
                 >
                     🚀

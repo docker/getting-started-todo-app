@@ -13,15 +13,14 @@ function init() {
     return new Promise((acc, rej) => {
         try {
             db = new Database(location);
-            
+
             if (process.env.NODE_ENV !== 'test')
-                console.log(`Using sqlite database at ${location}`);
 
             // Create table if it doesn't exist
             db.exec(
                 'CREATE TABLE IF NOT EXISTS todo_items (id varchar(36), name varchar(255), completed boolean)'
             );
-            
+
             acc();
         } catch (err) {
             rej(err);
@@ -29,7 +28,7 @@ function init() {
     });
 }
 
-async function teardown() {
+function teardown() {
     return new Promise((acc, rej) => {
         try {
             if (db) {
@@ -42,7 +41,7 @@ async function teardown() {
     });
 }
 
-async function getItems() {
+function getItems() {
     return new Promise((acc, rej) => {
         try {
             const rows = db.prepare('SELECT * FROM todo_items').all();
@@ -59,7 +58,7 @@ async function getItems() {
     });
 }
 
-async function getItem(id) {
+function getItem(id) {
     return new Promise((acc, rej) => {
         try {
             const row = db.prepare('SELECT * FROM todo_items WHERE id = ?').get(id);
@@ -76,7 +75,7 @@ async function getItem(id) {
     });
 }
 
-async function storeItem(item) {
+function storeItem(item) {
     return new Promise((acc, rej) => {
         try {
             db.prepare(
@@ -89,7 +88,7 @@ async function storeItem(item) {
     });
 }
 
-async function updateItem(id, item) {
+function updateItem(id, item) {
     return new Promise((acc, rej) => {
         try {
             db.prepare(
@@ -102,7 +101,7 @@ async function updateItem(id, item) {
     });
 }
 
-async function removeItem(id) {
+function removeItem(id) {
     return new Promise((acc, rej) => {
         try {
             db.prepare('DELETE FROM todo_items WHERE id = ?').run(id);
