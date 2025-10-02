@@ -14,12 +14,12 @@ function init() {
         try {
             db = new Database(location);
 
-            if (process.env.NODE_ENV !== 'test')
-
-            // Create table if it doesn't exist
-            db.exec(
-                'CREATE TABLE IF NOT EXISTS todo_items (id varchar(36), name varchar(255), completed boolean)'
-            );
+            if (process.env.NODE_ENV !== 'test') {
+                // Create table if it doesn't exist
+                db.exec(
+                    'CREATE TABLE IF NOT EXISTS todo_items (id varchar(36), name varchar(255), completed boolean)',
+                );
+            }
 
             acc();
         } catch (err) {
@@ -61,11 +61,15 @@ function getItems() {
 function getItem(id) {
     return new Promise((acc, rej) => {
         try {
-            const row = db.prepare('SELECT * FROM todo_items WHERE id = ?').get(id);
+            const row = db
+                .prepare('SELECT * FROM todo_items WHERE id = ?')
+                .get(id);
             if (row) {
-                acc(Object.assign({}, row, {
-                    completed: row.completed === 1,
-                }));
+                acc(
+                    Object.assign({}, row, {
+                        completed: row.completed === 1,
+                    }),
+                );
             } else {
                 acc(undefined);
             }
@@ -79,7 +83,7 @@ function storeItem(item) {
     return new Promise((acc, rej) => {
         try {
             db.prepare(
-                'INSERT INTO todo_items (id, name, completed) VALUES (?, ?, ?)'
+                'INSERT INTO todo_items (id, name, completed) VALUES (?, ?, ?)',
             ).run(item.id, item.name, item.completed ? 1 : 0);
             acc();
         } catch (err) {
@@ -92,7 +96,7 @@ function updateItem(id, item) {
     return new Promise((acc, rej) => {
         try {
             db.prepare(
-                'UPDATE todo_items SET name=?, completed=? WHERE id = ?'
+                'UPDATE todo_items SET name=?, completed=? WHERE id = ?',
             ).run(item.name, item.completed ? 1 : 0, id);
             acc();
         } catch (err) {

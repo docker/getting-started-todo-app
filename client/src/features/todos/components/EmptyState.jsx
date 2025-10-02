@@ -13,9 +13,9 @@ export function EmptyState() {
             scale: 1,
             transition: {
                 duration: 0.5,
-                ease: "easeOut"
-            }
-        }
+                ease: 'easeOut',
+            },
+        },
     };
 
     const iconVariants = {
@@ -25,9 +25,9 @@ export function EmptyState() {
             transition: {
                 duration: 3,
                 repeat: Infinity,
-                ease: "easeInOut"
-            }
-        }
+                ease: 'easeInOut',
+            },
+        },
     };
 
     return (
@@ -57,12 +57,12 @@ export function EmptyState() {
                 <motion.span
                     animate={{
                         scale: [1, 1.2, 1],
-                        rotate: [0, 10, -10, 0]
+                        rotate: [0, 10, -10, 0],
                     }}
                     transition={{
                         duration: 2,
                         repeat: Infinity,
-                        delay: 0
+                        delay: 0,
                     }}
                 >
                     📝
@@ -70,12 +70,12 @@ export function EmptyState() {
                 <motion.span
                     animate={{
                         scale: [1, 1.2, 1],
-                        rotate: [0, -10, 10, 0]
+                        rotate: [0, -10, 10, 0],
                     }}
                     transition={{
                         duration: 2,
                         repeat: Infinity,
-                        delay: 0.5
+                        delay: 0.5,
                     }}
                 >
                     🎯
@@ -83,12 +83,12 @@ export function EmptyState() {
                 <motion.span
                     animate={{
                         scale: [1, 1.2, 1],
-                        rotate: [0, 10, -10, 0]
+                        rotate: [0, 10, -10, 0],
                     }}
                     transition={{
                         duration: 2,
                         repeat: Infinity,
-                        delay: 1
+                        delay: 1,
                     }}
                 >
                     🚀

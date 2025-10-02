@@ -29,9 +29,9 @@ export function Greeting({ userName }) {
             y: 0,
             transition: {
                 duration: 0.6,
-                ease: "easeOut"
-            }
-        }
+                ease: 'easeOut',
+            },
+        },
     };
 
     const waveVariants = {
@@ -39,12 +39,12 @@ export function Greeting({ userName }) {
             rotate: [0, 14, -8, 14, -4, 10, 0],
             transition: {
                 duration: 2,
-                ease: "easeInOut",
+                ease: 'easeInOut',
                 times: [0, 0.2, 0.4, 0.6, 0.7, 0.8, 1],
                 repeat: Infinity,
-                repeatDelay: 3
-            }
-        }
+                repeatDelay: 3,
+            },
+        },
     };
 
     return (
@@ -62,7 +62,7 @@ export function Greeting({ userName }) {
                     transition={{ delay: 0.2, duration: 0.5 }}
                 >
                     <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-gray-800 dark:text-gray-100">
-                        {timeGreeting}, {' '}
+                        {timeGreeting},{' '}
                         <span className="gradient-text">
                             {userName || 'Friend'}
                         </span>
@@ -77,7 +77,7 @@ export function Greeting({ userName }) {
                         👋
                     </motion.span>
                 </motion.div>
-                
+
                 <motion.p
                     className="text-lg text-gray-600 dark:text-gray-300 font-medium"
                     initial={{ opacity: 0, y: 10 }}

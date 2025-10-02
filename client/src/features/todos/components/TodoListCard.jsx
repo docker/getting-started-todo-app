@@ -1,4 +1,9 @@
-import { faCheck, faClock, faList, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import {
+    faCheck,
+    faClock,
+    faList,
+    faSpinner,
+} from '@fortawesome/free-solid-svg-icons';
 import { AnimatePresence, motion } from 'framer-motion';
 import PropTypes from 'prop-types';
 import { useCallback, useEffect, useState } from 'react';
@@ -10,7 +15,7 @@ import { ItemDisplay } from './ItemDisplay';
 const FILTER_OPTIONS = {
     ALL: 'all',
     ACTIVE: 'active',
-    COMPLETED: 'completed'
+    COMPLETED: 'completed',
 };
 
 /**
@@ -69,9 +74,9 @@ export function TodoListCard() {
 
         switch (filter) {
             case FILTER_OPTIONS.ACTIVE:
-                return items.filter(item => !item.completed);
+                return items.filter((item) => !item.completed);
             case FILTER_OPTIONS.COMPLETED:
-                return items.filter(item => item.completed);
+                return items.filter((item) => item.completed);
             default:
                 return items;
         }
@@ -84,8 +89,8 @@ export function TodoListCard() {
         visible: {
             opacity: 1,
             y: 0,
-            transition: { duration: 0.3 }
-        }
+            transition: { duration: 0.3 },
+        },
     };
 
     const containerVariants = {
@@ -94,9 +99,9 @@ export function TodoListCard() {
             opacity: 1,
             transition: {
                 duration: 0.5,
-                staggerChildren: 0.1
-            }
-        }
+                staggerChildren: 0.1,
+            },
+        },
     };
 
     /** Filter button component for All/Active/Completed filters */
@@ -104,20 +109,23 @@ export function TodoListCard() {
         <motion.button
             onClick={() => setFilter(filterType)}
             className={`flex items-center space-x-2 px-4 py-2 rounded-xl font-medium transition-all duration-300
-                       ${filter === filterType
-                         ? 'bg-blue-500 text-white shadow-lg'
-                         : 'bg-white/50 dark:bg-black/50 text-gray-600 dark:text-gray-400 hover:bg-white/70 dark:hover:bg-black/70'
+                       ${
+                           filter === filterType
+                               ? 'bg-blue-500 text-white shadow-lg'
+                               : 'bg-white/50 dark:bg-black/50 text-gray-600 dark:text-gray-400 hover:bg-white/70 dark:hover:bg-black/70'
                        }`}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
         >
             <FontAwesomeIcon icon={icon} className="w-4 h-4" />
             <span>{label}</span>
-            <span className={`text-xs px-2 py-1 rounded-full ${
-                filter === filterType
-                ? 'bg-white/20'
-                : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
-            }`}>
+            <span
+                className={`text-xs px-2 py-1 rounded-full ${
+                    filter === filterType
+                        ? 'bg-white/20'
+                        : 'bg-gray-200 dark:bg-gray-600 text-gray-600 dark:text-gray-300'
+                }`}
+            >
                 {count}
             </span>
         </motion.button>
@@ -135,7 +143,11 @@ export function TodoListCard() {
             <div className="flex justify-center items-center py-20">
                 <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    transition={{
+                        duration: 1,
+                        repeat: Infinity,
+                        ease: 'linear',
+                    }}
                     className="text-blue-500"
                 >
                     <FontAwesomeIcon icon={faSpinner} size="2x" />
@@ -171,13 +183,13 @@ export function TodoListCard() {
                         filterType={FILTER_OPTIONS.ACTIVE}
                         label="Active"
                         icon={faClock}
-                        count={items.filter(item => !item.completed).length}
+                        count={items.filter((item) => !item.completed).length}
                     />
                     <FilterButton
                         filterType={FILTER_OPTIONS.COMPLETED}
                         label="Completed"
                         icon={faCheck}
-                        count={items.filter(item => item.completed).length}
+                        count={items.filter((item) => item.completed).length}
                     />
                 </motion.div>
             )}
@@ -212,7 +224,7 @@ export function TodoListCard() {
                                 exit={{ opacity: 0, y: -20, scale: 0.95 }}
                                 transition={{
                                     duration: 0.3,
-                                    delay: index * 0.05
+                                    delay: index * 0.05,
                                 }}
                                 layout
                             >

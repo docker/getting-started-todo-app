@@ -1,4 +1,9 @@
-import { faEye, faEyeSlash, faSpinner, faUser } from '@fortawesome/free-solid-svg-icons';
+import {
+    faEye,
+    faEyeSlash,
+    faSpinner,
+    faUser,
+} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
@@ -11,7 +16,7 @@ export function AuthForm() {
         firstName: '',
         lastName: '',
         email: '',
-        password: ''
+        password: '',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState('');
@@ -27,7 +32,12 @@ export function AuthForm() {
             if (isLogin) {
                 await login(formData.email, formData.password);
             } else {
-                await register(formData.firstName, formData.lastName, formData.email, formData.password);
+                await register(
+                    formData.firstName,
+                    formData.lastName,
+                    formData.email,
+                    formData.password,
+                );
             }
         } catch (err) {
             setError(err.message || 'An error occurred');
@@ -37,9 +47,9 @@ export function AuthForm() {
     };
 
     const handleInputChange = (e) => {
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            [e.target.name]: e.target.value
+            [e.target.name]: e.target.value,
         }));
     };
 
@@ -48,8 +58,8 @@ export function AuthForm() {
         visible: {
             opacity: 1,
             y: 0,
-            transition: { duration: 0.6, ease: "easeOut" }
-        }
+            transition: { duration: 0.6, ease: 'easeOut' },
+        },
     };
 
     const switchVariants = {
@@ -57,8 +67,8 @@ export function AuthForm() {
         visible: {
             opacity: 1,
             x: 0,
-            transition: { duration: 0.3 }
-        }
+            transition: { duration: 0.3 },
+        },
     };
 
     return (
@@ -77,7 +87,10 @@ export function AuthForm() {
                         transition={{ delay: 0.2, duration: 0.5 }}
                         className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg"
                     >
-                        <FontAwesomeIcon icon={faUser} className="text-white text-2xl" />
+                        <FontAwesomeIcon
+                            icon={faUser}
+                            className="text-white text-2xl"
+                        />
                     </motion.div>
 
                     <h1 className="text-3xl font-display font-bold gradient-text mb-2">
@@ -85,7 +98,9 @@ export function AuthForm() {
                     </h1>
 
                     <p className="text-gray-600 dark:text-gray-300">
-                        {isLogin ? 'Sign in to continue your productivity journey' : 'Create your account to get started'}
+                        {isLogin
+                            ? 'Sign in to continue your productivity journey'
+                            : 'Create your account to get started'}
                     </p>
                 </div>
 
@@ -96,7 +111,9 @@ export function AuthForm() {
                         animate={{ opacity: 1, height: 'auto' }}
                         className="bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-xl p-4 mb-6"
                     >
-                        <p className="text-red-700 dark:text-red-300 text-sm">{error}</p>
+                        <p className="text-red-700 dark:text-red-300 text-sm">
+                            {error}
+                        </p>
                     </motion.div>
                 )}
 
@@ -193,7 +210,9 @@ export function AuthForm() {
                                 onClick={() => setShowPassword(!showPassword)}
                                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
                             >
-                                <FontAwesomeIcon icon={showPassword ? faEyeSlash : faEye} />
+                                <FontAwesomeIcon
+                                    icon={showPassword ? faEyeSlash : faEye}
+                                />
                             </button>
                         </div>
                     </div>
@@ -204,20 +223,30 @@ export function AuthForm() {
                         disabled={isSubmitting}
                         className={`w-full py-3 px-6 rounded-xl font-semibold text-white shadow-lg
                                    transition-all duration-300 flex items-center justify-center space-x-2
-                                   ${isSubmitting
-                                     ? 'bg-gray-400 cursor-not-allowed'
-                                     : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:shadow-xl transform hover:scale-[1.02]'
+                                   ${
+                                       isSubmitting
+                                           ? 'bg-gray-400 cursor-not-allowed'
+                                           : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:shadow-xl transform hover:scale-[1.02]'
                                    }`}
                         whileHover={!isSubmitting ? { scale: 1.02 } : {}}
                         whileTap={!isSubmitting ? { scale: 0.98 } : {}}
                     >
                         {isSubmitting ? (
                             <>
-                                <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
-                                <span>{isLogin ? 'Signing in...' : 'Creating account...'}</span>
+                                <FontAwesomeIcon
+                                    icon={faSpinner}
+                                    className="animate-spin"
+                                />
+                                <span>
+                                    {isLogin
+                                        ? 'Signing in...'
+                                        : 'Creating account...'}
+                                </span>
                             </>
                         ) : (
-                            <span>{isLogin ? 'Sign In' : 'Create Account'}</span>
+                            <span>
+                                {isLogin ? 'Sign In' : 'Create Account'}
+                            </span>
                         )}
                     </motion.button>
                 </form>
@@ -225,13 +254,20 @@ export function AuthForm() {
                 {/* Toggle Form */}
                 <div className="mt-8 text-center">
                     <p className="text-gray-600 dark:text-gray-300 mb-4">
-                        {isLogin ? "Don't have an account?" : "Already have an account?"}
+                        {isLogin
+                            ? "Don't have an account?"
+                            : 'Already have an account?'}
                     </p>
                     <motion.button
                         onClick={() => {
                             setIsLogin(!isLogin);
                             setError('');
-                            setFormData({ firstName: '', lastName: '', email: '', password: '' });
+                            setFormData({
+                                firstName: '',
+                                lastName: '',
+                                email: '',
+                                password: '',
+                            });
                         }}
                         className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 font-semibold transition-colors"
                         whileHover={{ scale: 1.05 }}

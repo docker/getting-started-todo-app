@@ -4,7 +4,7 @@ import {
     faMoon,
     faSignOutAlt,
     faSun,
-    faUser
+    faUser,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { motion } from 'framer-motion';
@@ -37,7 +37,10 @@ export const Header = () => {
     // Click outside handler
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target)
+            ) {
                 setIsDropdownOpen(false);
             }
         };
@@ -76,7 +79,7 @@ export const Header = () => {
                 background: 'rgba(255, 255, 255, 0.1)',
                 backdropFilter: 'blur(25px)',
                 borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
             }}
         >
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -85,17 +88,20 @@ export const Header = () => {
                     <motion.div
                         className="flex items-center space-x-3"
                         whileHover={{ scale: 1.02 }}
-                        transition={{ type: "spring", stiffness: 400 }}
+                        transition={{ type: 'spring', stiffness: 400 }}
                     >
                         <motion.div
                             className="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg"
                             style={{
-                                background: 'linear-gradient(135deg, #667eea, #764ba2)',
-                                boxShadow: '0 4px 15px rgba(102, 126, 234, 0.4)'
+                                background:
+                                    'linear-gradient(135deg, #667eea, #764ba2)',
+                                boxShadow:
+                                    '0 4px 15px rgba(102, 126, 234, 0.4)',
                             }}
                             whileHover={{
                                 scale: 1.1,
-                                boxShadow: '0 6px 20px rgba(102, 126, 234, 0.6)'
+                                boxShadow:
+                                    '0 6px 20px rgba(102, 126, 234, 0.6)',
                             }}
                         >
                             <FontAwesomeIcon
@@ -106,10 +112,11 @@ export const Header = () => {
                         <motion.span
                             className="text-2xl font-display font-bold"
                             style={{
-                                background: 'linear-gradient(135deg, #667eea, #764ba2)',
+                                background:
+                                    'linear-gradient(135deg, #667eea, #764ba2)',
                                 WebkitBackgroundClip: 'text',
                                 WebkitTextFillColor: 'transparent',
-                                backgroundClip: 'text'
+                                backgroundClip: 'text',
                             }}
                             whileHover={{ scale: 1.05 }}
                         >
@@ -125,25 +132,29 @@ export const Header = () => {
                             className="header-btn header-theme-toggle"
                             whileHover={{
                                 scale: 1.05,
-                                y: -2
+                                y: -2,
                             }}
                             whileTap={{ scale: 0.95 }}
                         >
                             <FontAwesomeIcon
                                 icon={isDarkMode ? faSun : faMoon}
                                 className="icon icon-sm"
-                                style={{ color: isDarkMode ? '#fbbf24' : '#6366f1' }}
+                                style={{
+                                    color: isDarkMode ? '#fbbf24' : '#6366f1',
+                                }}
                             />
                         </motion.button>
 
                         {/* Enhanced User Dropdown */}
                         <div className="relative" ref={dropdownRef}>
                             <motion.button
-                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                                onClick={() =>
+                                    setIsDropdownOpen(!isDropdownOpen)
+                                }
                                 className="header-btn user-dropdown-btn"
                                 whileHover={{
                                     scale: 1.02,
-                                    y: -2
+                                    y: -2,
                                 }}
                                 whileTap={{ scale: 0.98 }}
                             >
@@ -161,7 +172,9 @@ export const Header = () => {
                                 </span>
                                 <motion.div
                                     className="dropdown-chevron"
-                                    animate={{ rotate: isDropdownOpen ? 180 : 0 }}
+                                    animate={{
+                                        rotate: isDropdownOpen ? 180 : 0,
+                                    }}
                                     transition={{ duration: 0.2 }}
                                 >
                                     <FontAwesomeIcon
@@ -174,25 +187,42 @@ export const Header = () => {
                             {/* Simplified Dropdown Menu */}
                             {isDropdownOpen && (
                                 <motion.div
-                                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                                    initial={{
+                                        opacity: 0,
+                                        scale: 0.95,
+                                        y: -10,
+                                    }}
                                     animate={{ opacity: 1, scale: 1, y: 0 }}
                                     exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                                    transition={{ duration: 0.3, ease: "easeOut" }}
+                                    transition={{
+                                        duration: 0.3,
+                                        ease: 'easeOut',
+                                    }}
                                     className="dropdown-menu-simplified"
                                 >
                                     {/* Menu Items Only */}
                                     <div className="dropdown-items">
                                         <motion.button
                                             className="dropdown-item dropdown-item-profile"
-                                            whileHover={{ x: 4, backgroundColor: 'rgba(99, 102, 241, 0.1)' }}
+                                            whileHover={{
+                                                x: 4,
+                                                backgroundColor:
+                                                    'rgba(99, 102, 241, 0.1)',
+                                            }}
                                             whileTap={{ scale: 0.98 }}
                                         >
                                             <div className="dropdown-item-icon profile-icon">
-                                                <FontAwesomeIcon icon={faUser} />
+                                                <FontAwesomeIcon
+                                                    icon={faUser}
+                                                />
                                             </div>
                                             <div className="dropdown-item-content">
-                                                <span className="dropdown-item-title">Profile Settings</span>
-                                                <span className="dropdown-item-subtitle">Manage your account</span>
+                                                <span className="dropdown-item-title">
+                                                    Profile Settings
+                                                </span>
+                                                <span className="dropdown-item-subtitle">
+                                                    Manage your account
+                                                </span>
                                             </div>
                                         </motion.button>
 
@@ -202,17 +232,24 @@ export const Header = () => {
                                             className="dropdown-item dropdown-item-logout"
                                             whileHover={{
                                                 x: 4,
-                                                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                                                scale: 1.02
+                                                backgroundColor:
+                                                    'rgba(239, 68, 68, 0.1)',
+                                                scale: 1.02,
                                             }}
                                             whileTap={{ scale: 0.98 }}
                                         >
                                             <div className="dropdown-item-icon logout-icon">
-                                                <FontAwesomeIcon icon={faSignOutAlt} />
+                                                <FontAwesomeIcon
+                                                    icon={faSignOutAlt}
+                                                />
                                             </div>
                                             <div className="dropdown-item-content">
-                                                <span className="dropdown-item-title">Sign Out</span>
-                                                <span className="dropdown-item-subtitle">Logout from your account</span>
+                                                <span className="dropdown-item-title">
+                                                    Sign Out
+                                                </span>
+                                                <span className="dropdown-item-subtitle">
+                                                    Logout from your account
+                                                </span>
                                             </div>
                                         </motion.button>
                                     </div>

@@ -28,14 +28,16 @@ async function init() {
         waitForDns: true,
     });
 
-    pool = mysql.createPool({
-        connectionLimit: 5,
-        host,
-        user,
-        password,
-        database,
-        charset: 'utf8mb4',
-    }).promise();
+    pool = mysql
+        .createPool({
+            connectionLimit: 5,
+            host,
+            user,
+            password,
+            database,
+            charset: 'utf8mb4',
+        })
+        .promise();
 
     await pool.query(
         `CREATE TABLE IF NOT EXISTS todo_items (
@@ -45,7 +47,7 @@ async function init() {
             user_id varchar(36),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        ) DEFAULT CHARSET utf8mb4`
+        ) DEFAULT CHARSET utf8mb4`,
     );
 
     // Initialize database schema: create users table
@@ -58,23 +60,26 @@ async function init() {
             password_hash varchar(255) NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        ) DEFAULT CHARSET utf8mb4`
+        ) DEFAULT CHARSET utf8mb4`,
     );
 
     // Verify and migrate: ensure user_id column exists in todo_items table
     try {
-        const [rows] = await pool.query(`SHOW COLUMNS FROM todo_items LIKE 'user_id'`);
+        const [rows] = await pool.query(
+            "SHOW COLUMNS FROM todo_items LIKE 'user_id'",
+        );
 
         if (rows.length === 0) {
             // Add user_id column if it doesn't exist
             try {
-                await pool.query(`ALTER TABLE todo_items ADD COLUMN user_id varchar(36)`);
+                await pool.query(
+                    'ALTER TABLE todo_items ADD COLUMN user_id varchar(36)',
+                );
             } catch (alterErr) {
                 console.log('Note: user_id column may already exist');
             }
         }
-    } catch (showErr) {
-    }
+    } catch (showErr) {}
 
     console.log(`Connected to mysql db at host ${HOST}`);
 }
@@ -132,7 +137,7 @@ function storeItem(item) {
                         (fallbackErr) => {
                             if (fallbackErr) return rej(fallbackErr);
                             acc();
-                        }
+                        },
                     );
                 } else {
                     acc();
@@ -157,7 +162,7 @@ function updateItem(id, item) {
                         (fallbackErr) => {
                             if (fallbackErr) return rej(fallbackErr);
                             acc();
-                        }
+                        },
                     );
                 } else {
                     acc();
@@ -183,21 +188,31 @@ function createUser(user) {
     return new Promise((acc, rej) => {
         pool.query(
             'INSERT INTO users (id, first_name, last_name, email, password_hash) VALUES (?, ?, ?, ?, ?)',
-            [user.id, user.firstName, user.lastName, user.email, user.passwordHash],
+            [
+                user.id,
+                user.firstName,
+                user.lastName,
+                user.email,
+                user.passwordHash,
+            ],
             (err) => {
                 if (err) return rej(err);
                 acc();
-            }
+            },
         );
     });
 }
 
 function getUserByEmail(email) {
     return new Promise((acc, rej) => {
-        pool.query('SELECT * FROM users WHERE email = ?', [email], (err, rows) => {
-            if (err) return rej(err);
-            acc(rows[0] || null);
-        });
+        pool.query(
+            'SELECT * FROM users WHERE email = ?',
+            [email],
+            (err, rows) => {
+                if (err) return rej(err);
+                acc(rows[0] || null);
+            },
+        );
     });
 }
 
@@ -213,15 +228,19 @@ function getUserById(id) {
 // Update existing functions to filter by user
 function getItemsByUser(userId) {
     return new Promise((acc, rej) => {
-        pool.query('SELECT * FROM todo_items WHERE user_id = ?', [userId], (err, rows) => {
-            if (err) return rej(err);
-            acc(
-                rows.map((item) => ({
-                    ...item,
-                    completed: item.completed === 1,
-                }))
-            );
-        });
+        pool.query(
+            'SELECT * FROM todo_items WHERE user_id = ?',
+            [userId],
+            (err, rows) => {
+                if (err) return rej(err);
+                acc(
+                    rows.map((item) => ({
+                        ...item,
+                        completed: item.completed === 1,
+                    })),
+                );
+            },
+        );
     });
 }
 
@@ -240,12 +259,12 @@ function storeItemForUser(item, userId) {
                         (fallbackErr) => {
                             if (fallbackErr) return rej(fallbackErr);
                             acc();
-                        }
+                        },
                     );
                 } else {
                     acc();
                 }
-            }
+            },
         );
     });
 }

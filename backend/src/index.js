@@ -2,7 +2,12 @@ const express = require('express');
 const app = express();
 const db = require('./persistence');
 const getGreeting = require('./routes/getGreeting');
-const { getItems, addItem, updateItem, deleteItem } = require('./routes/todo/items');
+const {
+    getItems,
+    addItem,
+    updateItem,
+    deleteItem,
+} = require('./routes/todo/items');
 const { register, login } = require('./routes/auth');
 const { authenticateToken } = require('./middleware/auth');
 

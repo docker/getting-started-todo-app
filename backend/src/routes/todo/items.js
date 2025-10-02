@@ -77,5 +77,5 @@ module.exports = {
     getItems,
     addItem,
     updateItem,
-    deleteItem
+    deleteItem,
 };
