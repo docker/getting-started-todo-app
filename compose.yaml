@@ -25,18 +25,18 @@ services:
       MYSQL_USER: ${MYSQL_USER:-todouser}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD:-secure_password_change_me}
       MYSQL_DB: ${MYSQL_DB:-todos}
-      
+
       # Application configuration
       NODE_ENV: ${NODE_ENV:-development}
       JWT_SECRET: ${JWT_SECRET:-change-this-in-production-use-long-random-string}
       PORT: 3000
-      
+
       # Security headers
       HELMET_ENABLED: true
       RATE_LIMIT_ENABLED: true
       RATE_LIMIT_MAX: 100
       RATE_LIMIT_WINDOW_MS: 900000
-      
+
       # Logging
       LOG_LEVEL: ${LOG_LEVEL:-info}
     depends_on:
