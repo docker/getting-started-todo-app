@@ -34,7 +34,7 @@ export function AuthForm() {
                     formData.firstName,
                     formData.lastName,
                     formData.email,
-                    formData.password
+                    formData.password,
                 );
                 console.log('Registration result:', result);
             }
@@ -90,14 +90,17 @@ export function AuthForm() {
 
                             {/* Error Alert */}
                             {error && (
-                                <div className="alert alert-danger alert-dismissible fade show" role="alert">
+                                <div
+                                    className="alert alert-danger alert-dismissible fade show"
+                                    role="alert"
+                                >
                                     <strong>Error:</strong> {error}
                                     <button
                                         type="button"
                                         className="btn-close"
                                         onClick={() => setError('')}
                                         aria-label="Close"
-                                    ></button>
+                                    />
                                 </div>
                             )}
 
@@ -107,7 +110,12 @@ export function AuthForm() {
                                 {!isLogin && (
                                     <div className="row mb-3">
                                         <div className="col-md-6">
-                                            <label htmlFor="firstName" className="form-label">First Name</label>
+                                            <label
+                                                htmlFor="firstName"
+                                                className="form-label"
+                                            >
+                                                First Name
+                                            </label>
                                             <input
                                                 type="text"
                                                 className="form-control"
@@ -120,7 +128,12 @@ export function AuthForm() {
                                             />
                                         </div>
                                         <div className="col-md-6">
-                                            <label htmlFor="lastName" className="form-label">Last Name</label>
+                                            <label
+                                                htmlFor="lastName"
+                                                className="form-label"
+                                            >
+                                                Last Name
+                                            </label>
                                             <input
                                                 type="text"
                                                 className="form-control"
@@ -137,7 +150,12 @@ export function AuthForm() {
 
                                 {/* Email */}
                                 <div className="mb-3">
-                                    <label htmlFor="email" className="form-label">Email</label>
+                                    <label
+                                        htmlFor="email"
+                                        className="form-label"
+                                    >
+                                        Email
+                                    </label>
                                     <input
                                         type="email"
                                         className="form-control"
@@ -153,7 +171,12 @@ export function AuthForm() {
 
                                 {/* Password */}
                                 <div className="mb-3">
-                                    <label htmlFor="password" className="form-label">Password</label>
+                                    <label
+                                        htmlFor="password"
+                                        className="form-label"
+                                    >
+                                        Password
+                                    </label>
                                     <input
                                         type="password"
                                         className="form-control"
@@ -168,7 +191,8 @@ export function AuthForm() {
                                     />
                                     {!isLogin && (
                                         <div className="form-text">
-                                            Password must be at least 6 characters
+                                            Password must be at least 6
+                                            characters
                                         </div>
                                     )}
                                 </div>
@@ -180,7 +204,7 @@ export function AuthForm() {
                                     disabled={isSubmitting}
                                 >
                                     {isSubmitting && (
-                                        <span className="spinner-border spinner-border-sm me-2"></span>
+                                        <span className="spinner-border spinner-border-sm me-2" />
                                     )}
                                     {getButtonText()}
                                 </button>
@@ -188,7 +212,9 @@ export function AuthForm() {
                                 {/* Toggle Link */}
                                 <div className="text-center">
                                     <span className="text-muted">
-                                        {isLogin ? "Don't have an account? " : "Already have an account? "}
+                                        {isLogin
+                                            ? "Don't have an account? "
+                                            : 'Already have an account? '}
                                     </span>
                                     <button
                                         type="button"

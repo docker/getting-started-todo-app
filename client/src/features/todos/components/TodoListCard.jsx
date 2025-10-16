@@ -82,9 +82,7 @@ export function TodoListCard() {
         <button
             onClick={() => setFilter(filterType)}
             className={`btn ${
-                filter === filterType
-                    ? 'btn-primary'
-                    : 'btn-outline-secondary'
+                filter === filterType ? 'btn-primary' : 'btn-outline-secondary'
             }`}
         >
             {label} <span className="badge bg-secondary">{count}</span>
@@ -113,7 +111,10 @@ export function TodoListCard() {
 
             {/* Filter Buttons */}
             {items.length > 0 && (
-                <div className="btn-group mb-4 d-flex justify-content-center" role="group">
+                <div
+                    className="btn-group mb-4 d-flex justify-content-center"
+                    role="group"
+                >
                     <FilterButton
                         filterType={FILTER_OPTIONS.ALL}
                         label="All"
@@ -140,7 +141,9 @@ export function TodoListCard() {
                     <div className="text-center py-5">
                         <div className="display-1 mb-3">🔍</div>
                         <h3 className="h5">No {filter} tasks found</h3>
-                        <p className="text-muted">Try switching to a different filter</p>
+                        <p className="text-muted">
+                            Try switching to a different filter
+                        </p>
                     </div>
                 )
             ) : (

@@ -29,9 +29,7 @@ export const Header = () => {
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm fixed-top">
             <div className="container">
-                <span className="navbar-brand">
-                    ✅ TodoApp
-                </span>
+                <span className="navbar-brand">✅ TodoApp</span>
 
                 <div className="d-flex align-items-center">
                     <button
@@ -57,9 +55,14 @@ export const Header = () => {
                                     {user?.email}
                                 </span>
                             </li>
-                            <li><hr className="dropdown-divider" /></li>
                             <li>
-                                <button className="dropdown-item" onClick={logout}>
+                                <hr className="dropdown-divider" />
+                            </li>
+                            <li>
+                                <button
+                                    className="dropdown-item"
+                                    onClick={logout}
+                                >
                                     🚪 Sign Out
                                 </button>
                             </li>

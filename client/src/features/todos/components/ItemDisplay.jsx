@@ -51,7 +51,9 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
     };
 
     const removeItem = async () => {
-        if (!window.confirm('Are you sure you want to delete this task?')) return;
+        if (!window.confirm('Are you sure you want to delete this task?')) {
+            return;
+        }
 
         try {
             const response = await apiCall(`/api/items/${item.id}`, {
@@ -67,7 +69,9 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
     };
 
     return (
-        <div className={`list-group-item ${item.completed ? 'list-group-item-success' : ''}`}>
+        <div
+            className={`list-group-item ${item.completed ? 'list-group-item-success' : ''}`}
+        >
             <div className="d-flex align-items-center">
                 <input
                     type="checkbox"
@@ -90,7 +94,13 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
                             autoFocus
                         />
                     ) : (
-                        <span className={item.completed ? 'text-decoration-line-through' : ''}>
+                        <span
+                            className={
+                                item.completed
+                                    ? 'text-decoration-line-through'
+                                    : ''
+                            }
+                        >
                             {item.name}
                         </span>
                     )}
@@ -99,19 +109,35 @@ export function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
                 <div className="btn-group ms-3">
                     {isEditing ? (
                         <>
-                            <button onClick={saveEdit} className="btn btn-sm btn-success" title="Save">
+                            <button
+                                onClick={saveEdit}
+                                className="btn btn-sm btn-success"
+                                title="Save"
+                            >
                                 ✓
                             </button>
-                            <button onClick={cancelEdit} className="btn btn-sm btn-secondary" title="Cancel">
+                            <button
+                                onClick={cancelEdit}
+                                className="btn btn-sm btn-secondary"
+                                title="Cancel"
+                            >
                                 ✕
                             </button>
                         </>
                     ) : (
                         <>
-                            <button onClick={() => setIsEditing(true)} className="btn btn-sm btn-primary" title="Edit">
+                            <button
+                                onClick={() => setIsEditing(true)}
+                                className="btn btn-sm btn-primary"
+                                title="Edit"
+                            >
                                 ✏️
                             </button>
-                            <button onClick={removeItem} className="btn btn-sm btn-danger" title="Delete">
+                            <button
+                                onClick={removeItem}
+                                className="btn btn-sm btn-danger"
+                                title="Delete"
+                            >
                                 🗑️
                             </button>
                         </>

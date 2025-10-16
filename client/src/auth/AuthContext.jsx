@@ -27,7 +27,9 @@ export const AuthProvider = ({ children }) => {
     const login = async (email, password) => {
         console.log('AuthContext: Starting login for', email);
         try {
-            console.log('AuthContext: Sending fetch request to /api/auth/login');
+            console.log(
+                'AuthContext: Sending fetch request to /api/auth/login',
+            );
             const response = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: {
@@ -36,7 +38,11 @@ export const AuthProvider = ({ children }) => {
                 body: JSON.stringify({ email, password }),
             });
 
-            console.log('AuthContext: Received response', response.status, response.ok);
+            console.log(
+                'AuthContext: Received response',
+                response.status,
+                response.ok,
+            );
 
             if (!response.ok) {
                 const error = await response.json();
@@ -60,7 +66,9 @@ export const AuthProvider = ({ children }) => {
     const register = async (firstName, lastName, email, password) => {
         console.log('AuthContext: Starting registration for', email);
         try {
-            console.log('AuthContext: Sending fetch request to /api/auth/register');
+            console.log(
+                'AuthContext: Sending fetch request to /api/auth/register',
+            );
             const response = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: {
@@ -74,16 +82,26 @@ export const AuthProvider = ({ children }) => {
                 }),
             });
 
-            console.log('AuthContext: Received response', response.status, response.ok);
+            console.log(
+                'AuthContext: Received response',
+                response.status,
+                response.ok,
+            );
 
             if (!response.ok) {
                 const error = await response.json();
-                console.log('AuthContext: Registration failed with error:', error);
+                console.log(
+                    'AuthContext: Registration failed with error:',
+                    error,
+                );
                 throw new Error(error.message || 'Registration failed');
             }
 
             const userData = await response.json();
-            console.log('AuthContext: Registration successful, user data:', userData);
+            console.log(
+                'AuthContext: Registration successful, user data:',
+                userData,
+            );
             setUser(userData.user);
             localStorage.setItem('user', JSON.stringify(userData.user));
             localStorage.setItem('token', userData.token);
