@@ -1,6 +1,3 @@
-import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { AnimatePresence, motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { AuthProvider, useAuth } from './auth/AuthContext';
 import { AuthForm } from './auth/components/AuthForm';
@@ -32,29 +29,15 @@ const AppContent = () => {
     if (isLoading) {
         return (
             <div
-                className="min-h-screen flex items-center justify-center"
+                className="min-h-screen d-flex align-items-center justify-content-center"
                 style={getBackgroundStyle()}
             >
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="text-center"
-                >
-                    <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{
-                            duration: 1,
-                            repeat: Infinity,
-                            ease: 'linear',
-                        }}
-                        className="text-blue-500 mb-4"
-                    >
-                        <FontAwesomeIcon icon={faSpinner} size="3x" />
-                    </motion.div>
-                    <p className="text-white text-lg font-medium">
-                        Loading your workspace...
-                    </p>
-                </motion.div>
+                <div className="text-center">
+                    <div className="spinner-border text-primary mb-3" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </div>
+                    <p className="text-white">Loading your workspace...</p>
+                </div>
             </div>
         );
     }
@@ -64,33 +47,17 @@ const AppContent = () => {
             {isAuthenticated && <Header />}
 
             <main className="relative">
-                <AnimatePresence mode="wait">
-                    {!isAuthenticated ? (
-                        <motion.div
-                            key="auth"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.5 }}
-                            className="container mx-auto px-4 py-8 flex items-center justify-center min-h-screen"
-                        >
-                            <AuthForm />
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            key="app"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            transition={{ duration: 0.5 }}
-                            className="container mx-auto px-4 py-8 space-y-8"
-                        >
-                            <Greeting userName={user?.firstName} />
-                            <LiveClock />
-                            <TodoListCard />
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                {!isAuthenticated ? (
+                    <div className="container py-5 d-flex align-items-center justify-content-center min-vh-100">
+                        <AuthForm />
+                    </div>
+                ) : (
+                    <div className="container py-4">
+                        <Greeting userName={user?.firstName} />
+                        <LiveClock />
+                        <TodoListCard />
+                    </div>
+                )}
             </main>
         </div>
     );

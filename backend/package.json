@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
+    "start": "node src/index.js",
     "format": "prettier -l --write \"**/*.js\"",
     "format-check": "prettier --check \"**/*.js\"",
     "test": "SQLITE_DB_LOCATION=/tmp/test-todo.db jest",

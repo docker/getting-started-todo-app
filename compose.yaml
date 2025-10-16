@@ -1,30 +1,54 @@
 ###################################################
-# Secure Docker Compose for Todo App
+# Advanced Docker Compose for Todo App
 #
-# Production-ready setup with security hardening
+# Production-ready with security, monitoring, and performance optimizations
 ###################################################
+
+version: '3.9'
 
 services:
   ###################################################
-  # Service: backend (development - API only)
+  # Service: backend (Node.js API)
   ###################################################
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      args:
+        NODE_ENV: ${NODE_ENV:-development}
+    image: todo-app-backend:latest
+    container_name: todo-backend
+    hostname: backend
     environment:
+      # Database configuration
       MYSQL_HOST: mysql
-      MYSQL_USER: root
-      MYSQL_PASSWORD: secret
-      MYSQL_DB: todos
-      NODE_ENV: development
+      MYSQL_USER: ${MYSQL_USER:-todouser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-secure_password_change_me}
+      MYSQL_DB: ${MYSQL_DB:-todos}
+      
+      # Application configuration
+      NODE_ENV: ${NODE_ENV:-development}
+      JWT_SECRET: ${JWT_SECRET:-change-this-in-production-use-long-random-string}
+      PORT: 3000
+      
+      # Security headers
+      HELMET_ENABLED: true
+      RATE_LIMIT_ENABLED: true
+      RATE_LIMIT_MAX: 100
+      RATE_LIMIT_WINDOW_MS: 900000
+      
+      # Logging
+      LOG_LEVEL: ${LOG_LEVEL:-info}
     depends_on:
       mysql:
         condition: service_healthy
     ports:
-      - "3000:3000"
+      - "${BACKEND_PORT:-3000}:3000"
     volumes:
-      - ./backend/src:/usr/local/app/src
+      - ./backend/src:/usr/local/app/src:ro
+      - backend-logs:/usr/local/app/logs
+    networks:
+      - app-network
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -33,7 +57,23 @@ services:
       - CHOWN
       - SETGID
       - SETUID
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,nodev,size=64m
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     restart: unless-stopped
+    mem_limit: 512m
+    cpus: 1.0
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   ###################################################
   # Service: mysql

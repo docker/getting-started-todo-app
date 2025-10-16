@@ -1,17 +1,8 @@
-import {
-    faEye,
-    faEyeSlash,
-    faSpinner,
-    faUser,
-} from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useAuth } from '../AuthContext';
 
 export function AuthForm() {
     const [isLogin, setIsLogin] = useState(true);
-    const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -28,255 +19,191 @@ export function AuthForm() {
         setIsSubmitting(true);
         setError('');
 
+        console.log('Form submitted:', { isLogin, email: formData.email });
+
         try {
+            let result;
+
             if (isLogin) {
-                await login(formData.email, formData.password);
+                console.log('Attempting login...');
+                result = await login(formData.email, formData.password);
+                console.log('Login result:', result);
             } else {
-                await register(
+                console.log('Attempting registration...');
+                result = await register(
                     formData.firstName,
                     formData.lastName,
                     formData.email,
-                    formData.password,
+                    formData.password
                 );
+                console.log('Registration result:', result);
+            }
+
+            if (!result || !result.success) {
+                const errorMsg = result?.error || 'Authentication failed';
+                console.error('Auth failed:', errorMsg);
+                setError(errorMsg);
+                setIsSubmitting(false);
             }
         } catch (err) {
+            console.error('Auth error:', err);
             setError(err.message || 'An error occurred');
-        } finally {
             setIsSubmitting(false);
         }
     };
 
     const handleInputChange = (e) => {
-        setFormData((prev) => ({
-            ...prev,
+        setFormData({
+            ...formData,
             [e.target.name]: e.target.value,
-        }));
+        });
     };
 
-    const formVariants = {
-        hidden: { opacity: 0, y: 20 },
-        visible: {
-            opacity: 1,
-            y: 0,
-            transition: { duration: 0.6, ease: 'easeOut' },
-        },
+    const toggleMode = () => {
+        setIsLogin(!isLogin);
+        setError('');
+        setFormData({
+            firstName: '',
+            lastName: '',
+            email: '',
+            password: '',
+        });
     };
 
-    const switchVariants = {
-        hidden: { opacity: 0, x: 20 },
-        visible: {
-            opacity: 1,
-            x: 0,
-            transition: { duration: 0.3 },
-        },
+    const getButtonText = () => {
+        if (isSubmitting) {
+            return isLogin ? 'Signing in...' : 'Creating account...';
+        }
+        return isLogin ? 'Sign In' : 'Create Account';
     };
 
     return (
-        <div className="max-w-md mx-auto">
-            <motion.div
-                className="glass rounded-3xl p-8 shadow-2xl border border-white/20"
-                variants={formVariants}
-                initial="hidden"
-                animate="visible"
-            >
-                {/* Header */}
-                <div className="text-center mb-8">
-                    <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ delay: 0.2, duration: 0.5 }}
-                        className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg"
-                    >
-                        <FontAwesomeIcon
-                            icon={faUser}
-                            className="text-white text-2xl"
-                        />
-                    </motion.div>
+        <div className="container">
+            <div className="row justify-content-center min-vh-100 align-items-center">
+                <div className="col-12 col-md-6 col-lg-5">
+                    <div className="card shadow">
+                        <div className="card-body p-4">
+                            {/* Title */}
+                            <h2 className="text-center mb-4">
+                                {isLogin ? '🔐 Sign In' : '📝 Create Account'}
+                            </h2>
 
-                    <h1 className="text-3xl font-display font-bold gradient-text mb-2">
-                        {isLogin ? 'Welcome Back' : 'Join TodoApp'}
-                    </h1>
+                            {/* Error Alert */}
+                            {error && (
+                                <div className="alert alert-danger alert-dismissible fade show" role="alert">
+                                    <strong>Error:</strong> {error}
+                                    <button
+                                        type="button"
+                                        className="btn-close"
+                                        onClick={() => setError('')}
+                                        aria-label="Close"
+                                    ></button>
+                                </div>
+                            )}
 
-                    <p className="text-gray-600 dark:text-gray-300">
-                        {isLogin
-                            ? 'Sign in to continue your productivity journey'
-                            : 'Create your account to get started'}
-                    </p>
-                </div>
+                            {/* Form */}
+                            <form onSubmit={handleSubmit}>
+                                {/* Registration Fields */}
+                                {!isLogin && (
+                                    <div className="row mb-3">
+                                        <div className="col-md-6">
+                                            <label htmlFor="firstName" className="form-label">First Name</label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                id="firstName"
+                                                name="firstName"
+                                                value={formData.firstName}
+                                                onChange={handleInputChange}
+                                                required
+                                                disabled={isSubmitting}
+                                            />
+                                        </div>
+                                        <div className="col-md-6">
+                                            <label htmlFor="lastName" className="form-label">Last Name</label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                id="lastName"
+                                                name="lastName"
+                                                value={formData.lastName}
+                                                onChange={handleInputChange}
+                                                required
+                                                disabled={isSubmitting}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
 
-                {/* Error Message */}
-                {error && (
-                    <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        className="bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-xl p-4 mb-6"
-                    >
-                        <p className="text-red-700 dark:text-red-300 text-sm">
-                            {error}
-                        </p>
-                    </motion.div>
-                )}
+                                {/* Email */}
+                                <div className="mb-3">
+                                    <label htmlFor="email" className="form-label">Email</label>
+                                    <input
+                                        type="email"
+                                        className="form-control"
+                                        id="email"
+                                        name="email"
+                                        value={formData.email}
+                                        onChange={handleInputChange}
+                                        required
+                                        disabled={isSubmitting}
+                                        placeholder="you@example.com"
+                                    />
+                                </div>
 
-                {/* Form */}
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Name Fields (Register only) */}
-                    {!isLogin && (
-                        <motion.div
-                            variants={switchVariants}
-                            initial="hidden"
-                            animate="visible"
-                            className="grid grid-cols-2 gap-4"
-                        >
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    First Name
-                                </label>
-                                <input
-                                    type="text"
-                                    name="firstName"
-                                    value={formData.firstName}
-                                    onChange={handleInputChange}
-                                    required={!isLogin}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600
-                                             bg-white/70 dark:bg-black/70 text-gray-800 dark:text-gray-200
-                                             placeholder-gray-500 dark:placeholder-gray-400
-                                             focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                                             transition-all duration-300"
-                                    placeholder="John"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Last Name
-                                </label>
-                                <input
-                                    type="text"
-                                    name="lastName"
-                                    value={formData.lastName}
-                                    onChange={handleInputChange}
-                                    required={!isLogin}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600
-                                             bg-white/70 dark:bg-black/70 text-gray-800 dark:text-gray-200
-                                             placeholder-gray-500 dark:placeholder-gray-400
-                                             focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                                             transition-all duration-300"
-                                    placeholder="Doe"
-                                />
-                            </div>
-                        </motion.div>
-                    )}
+                                {/* Password */}
+                                <div className="mb-3">
+                                    <label htmlFor="password" className="form-label">Password</label>
+                                    <input
+                                        type="password"
+                                        className="form-control"
+                                        id="password"
+                                        name="password"
+                                        value={formData.password}
+                                        onChange={handleInputChange}
+                                        required
+                                        disabled={isSubmitting}
+                                        placeholder="••••••••"
+                                        minLength="6"
+                                    />
+                                    {!isLogin && (
+                                        <div className="form-text">
+                                            Password must be at least 6 characters
+                                        </div>
+                                    )}
+                                </div>
 
-                    {/* Email Field */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Email Address
-                        </label>
-                        <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleInputChange}
-                            required
-                            className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600
-                                     bg-white/70 dark:bg-black/70 text-gray-800 dark:text-gray-200
-                                     placeholder-gray-500 dark:placeholder-gray-400
-                                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                                     transition-all duration-300"
-                            placeholder="john@example.com"
-                        />
-                    </div>
+                                {/* Submit Button */}
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary w-100 mb-3"
+                                    disabled={isSubmitting}
+                                >
+                                    {isSubmitting && (
+                                        <span className="spinner-border spinner-border-sm me-2"></span>
+                                    )}
+                                    {getButtonText()}
+                                </button>
 
-                    {/* Password Field */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                            Password
-                        </label>
-                        <div className="relative">
-                            <input
-                                type={showPassword ? 'text' : 'password'}
-                                name="password"
-                                value={formData.password}
-                                onChange={handleInputChange}
-                                required
-                                className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 dark:border-gray-600
-                                         bg-white/70 dark:bg-black/70 text-gray-800 dark:text-gray-200
-                                         placeholder-gray-500 dark:placeholder-gray-400
-                                         focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                                         transition-all duration-300"
-                                placeholder="••••••••"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
-                            >
-                                <FontAwesomeIcon
-                                    icon={showPassword ? faEyeSlash : faEye}
-                                />
-                            </button>
+                                {/* Toggle Link */}
+                                <div className="text-center">
+                                    <span className="text-muted">
+                                        {isLogin ? "Don't have an account? " : "Already have an account? "}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        className="btn btn-link p-0"
+                                        onClick={toggleMode}
+                                        disabled={isSubmitting}
+                                    >
+                                        {isLogin ? 'Sign up' : 'Sign in'}
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
-
-                    {/* Submit Button */}
-                    <motion.button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className={`w-full py-3 px-6 rounded-xl font-semibold text-white shadow-lg
-                                   transition-all duration-300 flex items-center justify-center space-x-2
-                                   ${
-                                       isSubmitting
-                                           ? 'bg-gray-400 cursor-not-allowed'
-                                           : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:shadow-xl transform hover:scale-[1.02]'
-                                   }`}
-                        whileHover={!isSubmitting ? { scale: 1.02 } : {}}
-                        whileTap={!isSubmitting ? { scale: 0.98 } : {}}
-                    >
-                        {isSubmitting ? (
-                            <>
-                                <FontAwesomeIcon
-                                    icon={faSpinner}
-                                    className="animate-spin"
-                                />
-                                <span>
-                                    {isLogin
-                                        ? 'Signing in...'
-                                        : 'Creating account...'}
-                                </span>
-                            </>
-                        ) : (
-                            <span>
-                                {isLogin ? 'Sign In' : 'Create Account'}
-                            </span>
-                        )}
-                    </motion.button>
-                </form>
-
-                {/* Toggle Form */}
-                <div className="mt-8 text-center">
-                    <p className="text-gray-600 dark:text-gray-300 mb-4">
-                        {isLogin
-                            ? "Don't have an account?"
-                            : 'Already have an account?'}
-                    </p>
-                    <motion.button
-                        onClick={() => {
-                            setIsLogin(!isLogin);
-                            setError('');
-                            setFormData({
-                                firstName: '',
-                                lastName: '',
-                                email: '',
-                                password: '',
-                            });
-                        }}
-                        className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 font-semibold transition-colors"
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                    >
-                        {isLogin ? 'Create an account' : 'Sign in instead'}
-                    </motion.button>
                 </div>
-            </motion.div>
+            </div>
         </div>
     );
 }
