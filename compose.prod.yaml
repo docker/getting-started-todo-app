@@ -1,0 +1,121 @@
+###################################################
+# Docker Compose - Production Configuration
+###################################################
+
+version: '3.9'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
+    image: todo-app-backend:prod
+    container_name: todo-backend-prod
+    environment:
+      NODE_ENV: production
+      MYSQL_HOST: mysql
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DB: ${MYSQL_DB}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - app-network
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,nodev
+    restart: always
+    mem_limit: 512m
+    cpus: 1.0
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  mysql:
+    image: mysql:9.3
+    container_name: todo-mysql-prod
+    command: >
+      --default-authentication-plugin=caching_sha2_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - todo-mysql-data-prod:/var/lib/mysql
+      - ./backend/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    security_opt:
+      - no-new-privileges:true
+    restart: always
+    mem_limit: 1g
+    cpus: 2.0
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      target: production
+    image: todo-app-client:prod
+    container_name: todo-client-prod
+    networks:
+      - app-network
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    restart: always
+    mem_limit: 128m
+    cpus: 0.5
+
+  nginx:
+    image: nginx:alpine
+    container_name: todo-nginx-prod
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - nginx-cache-prod:/var/cache/nginx
+    depends_on:
+      - backend
+      - client
+    networks:
+      - app-network
+    security_opt:
+      - no-new-privileges:true
+    restart: always
+    mem_limit: 256m
+    cpus: 0.5
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  todo-mysql-data-prod:
+    driver: local
+  nginx-cache-prod:
+    driver: local

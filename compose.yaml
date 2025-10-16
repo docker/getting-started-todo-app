@@ -4,8 +4,6 @@
 # Production-ready with security, monitoring, and performance optimizations
 ###################################################
 
-version: '3.9'
-
 services:
   ###################################################
   # Service: backend (Node.js API)
@@ -76,17 +74,32 @@ services:
         max-file: "3"
 
   ###################################################
-  # Service: mysql
+  # Service: mysql (Database with optimizations)
   ###################################################
   mysql:
     image: mysql:9.3
+    container_name: todo-mysql
+    hostname: mysql
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --max_connections=200
+      --innodb_buffer_pool_size=256M
+      --innodb_log_file_size=64M
     volumes:
       - todo-mysql-data:/var/lib/mysql
+      - mysql-logs:/var/log/mysql
+      - ./backend/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
     environment:
-      MYSQL_ROOT_PASSWORD: secret
-      MYSQL_DATABASE: todos
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-super_secret_root_password}
+      MYSQL_DATABASE: ${MYSQL_DB:-todos}
+      MYSQL_USER: ${MYSQL_USER:-todouser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-secure_password_change_me}
+      TZ: UTC
+    networks:
+      - app-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-super_secret_root_password}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -101,35 +114,142 @@ services:
       - SETGID
       - SETUID
     restart: unless-stopped
+    mem_limit: 1g
+    cpus: 2.0
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   ###################################################
-  # Service: client (React frontend)
+  # Service: client (React Vite Frontend)
   ###################################################
   client:
     build:
       context: ./client
       dockerfile: Dockerfile
+      args:
+        NODE_ENV: ${NODE_ENV:-development}
+    image: todo-app-client:latest
+    container_name: todo-client
+    hostname: client
     ports:
-      - "5173:5173"
+      - "${CLIENT_PORT:-5173}:5173"
     environment:
-      - VITE_API_URL=http://localhost:3000
+      - VITE_API_URL=${VITE_API_URL:-http://localhost:3000}
+      - VITE_APP_NAME=Todo App
+      - VITE_APP_VERSION=2.0.0
+      - NODE_ENV=${NODE_ENV:-development}
       - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     volumes:
-      - ./client/src:/app/src
-      - ./client/public:/app/public
-      - ./client/index.html:/app/index.html
-      - ./client/vite.config.js:/app/vite.config.js
+      - ./client/src:/app/src:ro
+      - ./client/public:/app/public:ro
+      - ./client/index.html:/app/index.html:ro
+      - ./client/vite.config.js:/app/vite.config.js:ro
+      - node_modules_client:/app/node_modules
+    networks:
+      - app-network
     security_opt:
       - no-new-privileges:true
     cap_drop:
       - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:noexec,nosuid,nodev,size=128m
+      - /app/.vite:exec,size=256m
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:5173"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     restart: unless-stopped
+    mem_limit: 512m
+    cpus: 1.0
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  ###################################################
+  # Service: nginx (Reverse Proxy & Load Balancer)
+  ###################################################
+  nginx:
+    image: nginx:alpine
+    container_name: todo-nginx
+    hostname: nginx
+    ports:
+      - "${NGINX_HTTP_PORT:-80}:80"
+      - "${NGINX_HTTPS_PORT:-443}:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - nginx-cache:/var/cache/nginx
+      - nginx-logs:/var/log/nginx
+    depends_on:
+      - backend
+      - client
+    networks:
+      - app-network
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+      - NET_BIND_SERVICE
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
 ###################################################
-# Volumes
+# Networks
+###################################################
+networks:
+  app-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
+
+###################################################
+# Volumes (Persistent Storage)
 ###################################################
 volumes:
   todo-mysql-data:
     driver: local
+    name: todo-mysql-data
+  mysql-logs:
+    driver: local
+    name: mysql-logs
+  backend-logs:
+    driver: local
+    name: backend-logs
+  node_modules_client:
+    driver: local
+    name: node_modules_client
+  nginx-cache:
+    driver: local
+    name: nginx-cache
+  nginx-logs:
+    driver: local
+    name: nginx-logs
