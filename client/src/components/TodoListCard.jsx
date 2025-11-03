@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { AddItemForm } from './AddNewItemForm';
 import { ItemDisplay } from './ItemDisplay';
 
@@ -38,6 +39,14 @@ export function TodoListCard() {
         [items],
     );
 
+    const handleOnDragEnd = (result) => {
+        if (!result.destination) return;
+        const newItems = Array.from(items);
+        const [reorderedItem] = newItems.splice(result.source.index, 1);
+        newItems.splice(result.destination.index, 0, reorderedItem);
+        setItems(newItems);
+    };
+
     if (items === null) return 'Loading...';
 
     return (
@@ -46,14 +55,36 @@ export function TodoListCard() {
             {items.length === 0 && (
                 <p className="text-center">No items yet! Add one above!</p>
             )}
-            {items.map((item) => (
-                <ItemDisplay
-                    key={item.id}
-                    item={item}
-                    onItemUpdate={onItemUpdate}
-                    onItemRemoval={onItemRemoval}
-                />
-            ))}
+            <DragDropContext onDragEnd={handleOnDragEnd}>
+                <Droppable droppableId="items">
+                    {(provided) => (
+                        <div {...provided.droppableProps} ref={provided.innerRef}>
+                            {items.map((item, index) => (
+                                <Draggable
+                                    key={item.id}
+                                    draggableId={item.id}
+                                    index={index}
+                                >
+                                    {(provided) => (
+                                        <div
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                       >
+                                           <ItemDisplay
+                                               item={item}
+                                               onItemUpdate={onItemUpdate}
+                                               onItemRemoval={onItemRemoval}
+                                               dragHandleProps={provided.dragHandleProps}
+                                           />
+                                        </div>
+                                    )}
+                                </Draggable>
+                            ))}
+                            {provided.placeholder}
+                        </div>
+                    )}
+                </Droppable>
+            </DragDropContext>
         </>
     );
 }
