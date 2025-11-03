@@ -41,8 +41,16 @@ CMD ["yarn", "dev"]
 FROM client-base AS client-build
 RUN yarn build
 
-
-
+###################################################
+# Stage: client-prod
+#
+# This stage builds the client application and serves it with Nginx.
+###################################################
+FROM nginx:1.25
+COPY --from=client-build /usr/local/app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
 
 ###################################################
 ################  BACKEND STAGES  #################
@@ -71,22 +79,3 @@ CMD ["yarn", "dev"]
 ###################################################
 FROM backend-dev AS test
 RUN yarn test
-
-###################################################
-# Stage: final
-#
-# This stage is intended to be the final "production" image. It sets up the
-# backend and copies the built client application from the client-build stage.
-#
-# It pulls the package.json and yarn.lock from the test stage to ensure that
-# the tests run (without this, the test stage would simply be skipped).
-###################################################
-FROM base AS final
-ENV NODE_ENV=production
-COPY --from=test /usr/local/app/package.json /usr/local/app/yarn.lock ./
-RUN --mount=type=cache,id=yarn,target=/usr/local/share/.cache/yarn \
-    yarn install --production --frozen-lockfile
-COPY backend/src ./src
-COPY --from=client-build /usr/local/app/dist ./src/static
-EXPOSE 3000
-CMD ["node", "src/index.js"]
