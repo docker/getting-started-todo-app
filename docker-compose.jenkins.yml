@@ -1,0 +1,14 @@
+version: '3'
+services:
+  jenkins:
+    image: jenkins/jenkins:lts
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - jenkins_home:/var/jenkins_home
+    environment:
+      - JENKINS_OPTS="--prefix=/jenkins"
+      - JENKINS_PLUGIN_INFO=/var/jenkins_home/plugins.txt
+volumes:
+  jenkins_home:

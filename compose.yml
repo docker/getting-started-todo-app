@@ -103,10 +103,17 @@ services:
   client:
     build:
       context: ./
-      target: client-prod
+      target: client-dev
+    develop:
+      watch:
+        - path: ./client/src
+          action: sync
+          target: /usr/local/app/src
+        - path: ./client/package.json
+          action: rebuild
     labels:
       traefik.http.routers.client.rule: Host(`localhost`)
-      traefik.http.services.client.loadbalancer.server.port: 80
+      traefik.http.services.client.loadbalancer.server.port: 5173
 
 
   ###################################################
