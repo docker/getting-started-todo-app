@@ -5,37 +5,49 @@ import { ItemDisplay } from './ItemDisplay';
 export function TodoListCard() {
     const [items, setItems] = useState(null);
 
+    const sortItems = (items) => {
+        // Sort items: incomplete first, completed last, and newly added at the top
+        return items.sort((a, b) => {
+            if (a.completed === b.completed) {
+                return b.id.localeCompare(a.id); // Compare by ID to show newly added items first
+            }
+            return a.completed - b.completed; // Incomplete items first
+        });
+    };
+
     useEffect(() => {
         fetch('/api/items')
             .then((r) => r.json())
-            .then(setItems);
+            .then((data) => setItems(sortItems(data))); // Apply sorting after fetching items
     }, []);
 
     const onNewItem = useCallback(
         (newItem) => {
-            setItems([...items, newItem]);
+            setItems((prevItems) => sortItems([...prevItems, newItem]));
         },
-        [items],
+        [],
     );
 
     const onItemUpdate = useCallback(
-        (item) => {
-            const index = items.findIndex((i) => i.id === item.id);
-            setItems([
-                ...items.slice(0, index),
-                item,
-                ...items.slice(index + 1),
-            ]);
+        (updatedItem) => {
+            setItems((prevItems) => {
+                const updatedItems = prevItems.map((item) =>
+                    item.id === updatedItem.id ? updatedItem : item
+                );
+                return sortItems(updatedItems);
+            });
         },
-        [items],
+        [],
     );
 
     const onItemRemoval = useCallback(
         (item) => {
-            const index = items.findIndex((i) => i.id === item.id);
-            setItems([...items.slice(0, index), ...items.slice(index + 1)]);
+            setItems((prevItems) => {
+                const updatedItems = prevItems.filter((i) => i.id !== item.id);
+                return sortItems(updatedItems);
+            });
         },
-        [items],
+        [],
     );
 
     if (items === null) return 'Loading...';
