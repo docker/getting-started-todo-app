@@ -38,7 +38,7 @@ services:
   # We also expose port 80 to connect to the proxy from the host machine.
   ###################################################
   proxy:
-    image: traefik:v3.4
+    image: traefik:v3.6
     command: --providers.docker
     ports:
       - 80:80
