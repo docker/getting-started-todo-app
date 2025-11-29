@@ -1,4 +1,4 @@
-const GREETING = 'Hello Wicky II';
+const GREETING = 'Hello Wicky III';
 
 module.exports = async (req, res) => {
     res.send({
