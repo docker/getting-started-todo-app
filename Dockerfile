@@ -49,6 +49,19 @@ RUN npm run build
 ###################################################
 
 ###################################################
+# Stage: sqlite3-build
+#
+# Compiles the sqlite3 native binary in an isolated stage so that the
+# backend stages can use ignore-scripts=true without breaking sqlite3.
+# Only the compiled artifact is copied across — the scripts never land
+# in any shipped image layer.
+###################################################
+FROM base AS sqlite3-build
+COPY backend/package.json backend/package-lock.json ./
+COPY .npmrc .
+RUN npm install && cd node_modules/sqlite3 && ../.bin/node-gyp rebuild
+
+###################################################
 # Stage: backend-base
 #
 # This stage is used as the base for the backend-dev and test stages, since
@@ -58,6 +71,8 @@ FROM base AS backend-dev
 COPY backend/package.json backend/package-lock.json ./
 COPY .npmrc .
 RUN npm install
+COPY --from=sqlite3-build /usr/local/app/node_modules/sqlite3/build \
+    ./node_modules/sqlite3/build
 COPY backend/spec ./spec
 COPY backend/src ./src
 CMD ["npm", "run", "dev"]
@@ -87,6 +102,8 @@ COPY --from=test /usr/local/app/package.json /usr/local/app/package-lock.json ./
 COPY .npmrc .
 RUN npm ci --production && \
     npm cache clean --force
+COPY --from=sqlite3-build /usr/local/app/node_modules/sqlite3/build \
+    ./node_modules/sqlite3/build
 COPY backend/src ./src
 COPY --from=client-build /usr/local/app/dist ./src/static
 EXPOSE 3000
