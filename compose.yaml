@@ -82,7 +82,7 @@ services:
         - path: ./backend/src
           action: sync
           target: /usr/local/app/src
-        - path: ./backend/package.json
+        - path: ./backend/src
           action: rebuild
     labels:
       traefik.http.routers.backend.rule: Host(`localhost`) && PathPrefix(`/api`)
