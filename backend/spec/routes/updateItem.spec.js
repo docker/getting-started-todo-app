@@ -10,7 +10,7 @@ jest.mock('../../src/persistence', () => ({
 test('it updates items correctly', async () => {
     const req = {
         params: { id: 1234 },
-        body: { name: 'New title', completed: false },
+        body: { name: 'New title', completed: false, category: 'personal' },
     };
     const res = { send: jest.fn() };
 
@@ -23,6 +23,8 @@ test('it updates items correctly', async () => {
     expect(db.updateItem.mock.calls[0][1]).toEqual({
         name: 'New title',
         completed: false,
+        priority: 'medium',
+        category: 'personal'
     });
 
     expect(db.getItem.mock.calls.length).toBe(1);

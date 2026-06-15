@@ -31,3 +31,20 @@
 button:focus {
     border: 1px solid #333;
 }
+
+.badge-priority-low {
+    background-color: green;
+}
+
+.badge-priority-medium {
+    background-color: yellow;
+}
+
+.badge-priority-high {
+    background-color: red;
+}
+
+.category-badge {
+    margin-top: 6px;
+    letter-spacing: 0.04em;
+}
