@@ -128,3 +128,12 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Reviewer notes
+ANSWERS.md
+PRIORITY_FEATURE.md
+planIrfan.md
+learning.md
+planRa2.md
+
+planShane.md

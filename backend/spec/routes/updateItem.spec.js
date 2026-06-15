@@ -23,6 +23,8 @@ test('it updates items correctly', async () => {
     expect(db.updateItem.mock.calls[0][1]).toEqual({
         name: 'New title',
         completed: false,
+        priority: 'medium',
+        due_date: null,         // <-- added
     });
 
     expect(db.getItem.mock.calls.length).toBe(1);
@@ -30,4 +32,20 @@ test('it updates items correctly', async () => {
 
     expect(res.send.mock.calls[0].length).toBe(1);
     expect(res.send.mock.calls[0][0]).toEqual(ITEM);
+});
+
+test('it updates item with a valid due_date', async () => {
+    const req = {
+        params: { id: 1234 },
+        body: { name: 'New title', completed: false, due_date: '2026-06-01' },
+    };
+    const res = { send: jest.fn() };
+
+    db.getItem.mockReturnValue(Promise.resolve(ITEM));
+
+    await updateItem(req, res);
+
+    expect(db.updateItem.mock.calls[0][1]).toEqual(
+        expect.objectContaining({ due_date: '2026-06-01' }),
+    );
 });

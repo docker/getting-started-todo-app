@@ -31,3 +31,30 @@
 button:focus {
     border: 1px solid #333;
 }
+
+.badge-priority-low {
+    background-color: green;
+}
+
+.badge-priority-medium {
+    background-color: yellow;
+}
+
+.badge-priority-high {
+    background-color: red;
+}
+
+//add for due date
+.item.overdue {
+    border-left: 4px solid #dc3545;
+    background-color: #fff5f5;
+
+    &:hover {
+        box-shadow: 0 0 1em #f5a0a0;
+    }
+}
+
+.due-date {
+    display: inline-block;
+    vertical-align: middle;
+}
