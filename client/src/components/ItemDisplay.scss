@@ -6,6 +6,8 @@
     border-radius: 5px;
     box-shadow: 0 0 1em #ccc;
     transition: all 0.2s ease-in-out;
+    position: relative;
+    overflow: visible;
 
     &:hover {
         box-shadow: 0 0 1em #aaa;
@@ -13,15 +15,191 @@
 
     &.completed {
         text-decoration: line-through;
+        background: linear-gradient(
+            135deg,
+            #f5f7fa 0%,
+            #c3cfe2 100%
+        );
+    }
+
+    &.celebrate {
+        animation: celebrate 0.8s ease-out;
+        background: linear-gradient(
+            135deg,
+            #667eea 0%,
+            #764ba2 25%,
+            #f093fb 50%,
+            #4facfe 75%,
+            #00f2fe 100%
+        );
+        background-size: 400% 400%;
+        animation: celebrate 0.8s ease-out,
+            gradient-shift 1s ease-in-out;
+    }
+}
+
+@keyframes celebrate {
+    0% {
+        transform: scale(1);
+    }
+    25% {
+        transform: scale(1.05) rotate(1deg);
+    }
+    50% {
+        transform: scale(1.1) rotate(-1deg);
+    }
+    75% {
+        transform: scale(1.05) rotate(0.5deg);
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+@keyframes gradient-shift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+@keyframes bounce {
+    0%,
+    100% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(-10px) scale(1.2);
+    }
+}
+
+@keyframes sparkle {
+    0% {
+        opacity: 0;
+        transform: translateY(0) scale(0) rotate(0deg);
+    }
+    50% {
+        opacity: 1;
+        transform: translateY(-20px) scale(1.5) rotate(180deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-40px) scale(0) rotate(360deg);
+    }
+}
+
+.icon-bounce {
+    animation: bounce 0.6s ease-out;
+    color: #28a745 !important;
+}
+
+.sparkles {
+    display: inline-block;
+    margin-left: 10px;
+    position: relative;
+}
+
+.sparkle {
+    display: inline-block;
+    font-size: 1.2em;
+    animation: sparkle 0.8s ease-out;
+    animation-fill-mode: both;
+
+    &:nth-child(1) {
+        animation-delay: 0s;
+    }
+
+    &:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    &:nth-child(3) {
+        animation-delay: 0.4s;
     }
 }
 
 .toggles {
     color: black;
+    transition: color 0.3s ease;
+
+    &:hover {
+        color: #28a745;
+    }
+}
+
+.item-wrapper {
+    position: relative;
+    margin-bottom: 15px;
 }
 
 .name {
     padding-top: 3px;
+    position: relative;
+}
+
+.celebration-image-container {
+    position: absolute;
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    pointer-events: none;
+    animation: image-pop-in 1.5s ease-out;
+}
+
+.celebration-image {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3),
+        0 0 20px rgba(255, 255, 255, 0.5);
+    animation: image-spin 2s ease-in-out;
+}
+
+@keyframes image-pop-in {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px) scale(0.3) rotate(-180deg);
+    }
+    30% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-10px) scale(1.1) rotate(0deg);
+    }
+    60% {
+        transform: translateX(-50%) translateY(0px) scale(1) rotate(10deg);
+    }
+    80% {
+        transform: translateX(-50%) translateY(0px) scale(1) rotate(-5deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0px) scale(1) rotate(0deg);
+    }
+}
+
+@keyframes image-spin {
+    0% {
+        transform: rotate(0deg) scale(1);
+    }
+    25% {
+        transform: rotate(90deg) scale(1.1);
+    }
+    50% {
+        transform: rotate(180deg) scale(1);
+    }
+    75% {
+        transform: rotate(270deg) scale(1.1);
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
 }
 
 .remove {
