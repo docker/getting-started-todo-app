@@ -136,17 +136,19 @@ services:
   # ok to hard-code them here.
   ###################################################
   mysql:
-    image: mysql:9.3
+    image: mysql:8.0
     volumes:
       - todo-mysql-data:/var/lib/mysql
     environment: 
       MYSQL_ROOT_PASSWORD: secret
       MYSQL_DATABASE: todos
+      MYSQL_ROOT_HOST: '%'
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-psecret"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
 
   ###################################################
   # Service: phpmyadmin
