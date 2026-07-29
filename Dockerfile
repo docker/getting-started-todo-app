@@ -57,9 +57,27 @@ RUN npm run build
 # in any shipped image layer.
 ###################################################
 FROM base AS sqlite3-build
+# Explicit native-addon build toolchain. Pinned here rather than relying on
+# whatever happens to ship in the upstream node:22 image, so this stage
+# stays reproducible even if the base image's bundled toolchain changes.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        python3 \
+        make \
+        g++ \
+    && rm -rf /var/lib/apt/lists/*
 COPY backend/package.json backend/package-lock.json ./
 COPY .npmrc .
+# ignore-scripts=true (see .npmrc) skips sqlite3's postinstall step, which
+# is what would normally compile its native binding. We rebuild it
+# explicitly here by invoking node-gyp directly (bypassing npm's script
+# runner entirely, so the project-level ignore-scripts=true has no effect
+# on this specific command).
 RUN npm ci && cd node_modules/sqlite3 && ../.bin/node-gyp rebuild
+# Fail the build here, with a clear message, if the compiled binary isn't
+# where the sqlite3 package expects it — instead of deferring an opaque
+# "Could not locate the bindings file" failure to test time.
+RUN test -f node_modules/sqlite3/build/Release/node_sqlite3.node \
+    || (echo "ERROR: sqlite3 native binding was not produced by node-gyp rebuild" && exit 1)
 
 ###################################################
 # Stage: backend-base
