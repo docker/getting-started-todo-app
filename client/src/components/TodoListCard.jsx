@@ -13,19 +13,20 @@ export function TodoListCard() {
 
     const onNewItem = useCallback(
         (newItem) => {
-            setItems([...items, newItem]);
+            setItems([newItem, ...items]);
         },
         [items],
     );
 
     const onItemUpdate = useCallback(
         (item) => {
-            const index = items.findIndex((i) => i.id === item.id);
-            setItems([
-                ...items.slice(0, index),
-                item,
-                ...items.slice(index + 1),
-            ]);
+           const remainingItems = items.filter((i) => i.id !== item.id);
+            if(item.completed){
+                setItems([...remainingItems,item])
+            }
+            else{
+                setItems([item,...remainingItems])
+            }
         },
         [items],
     );
