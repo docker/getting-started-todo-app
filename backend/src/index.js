@@ -1,4 +1,6 @@
 const express = require('express');
+const pino = require('pino');
+const pinoHttp = require('pino-http');
 const app = express();
 const db = require('./persistence');
 const getGreeting = require('./routes/getGreeting');
@@ -7,6 +9,11 @@ const addItem = require('./routes/addItem');
 const updateItem = require('./routes/updateItem');
 const deleteItem = require('./routes/deleteItem');
 
+const logger = pino({
+    level: process.env.LOG_LEVEL || 'info',
+});
+
+app.use(pinoHttp({ logger }));
 app.use(express.json());
 app.use(express.static(__dirname + '/static'));
 
@@ -18,17 +25,22 @@ app.delete('/api/items/:id', deleteItem);
 
 db.init()
     .then(() => {
-        app.listen(3000, () => console.log('Listening on port 3000'));
+        app.listen(3000, () => logger.info('Listening on port 3000'));
     })
     .catch((err) => {
-        console.error(err);
+        logger.error(err);
         process.exit(1);
     });
 
 const gracefulShutdown = () => {
     db.teardown()
-        .catch(() => {})
-        .then(() => process.exit());
+        .catch((err) => {
+            logger.warn({ err }, 'Error during DB teardown');
+        })
+        .then(() => {
+            logger.info('Shutting down');
+            process.exit();
+        });
 };
 
 process.on('SIGINT', gracefulShutdown);
