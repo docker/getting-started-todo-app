@@ -23,6 +23,12 @@ they are split into two separate services. This allows [Vite](https://vitejs.dev
 to manage the React app while [nodemon](https://nodemon.io/) works with the 
 backend. With containers, it's easy to separate the development needs!
 
+The development services use `Dockerfile.backend-dev` and
+`Dockerfile.client-dev`, each with its development stage last so no build target
+is needed. Both use the repository root as their build context. The original
+`Dockerfile` still builds the bundled production image. In a Radius image model,
+select the appropriate development file using `build.dockerfile`.
+
 ## Development
 
 To spin up the project, simply install Docker Desktop and then run the following 
@@ -39,6 +45,12 @@ moment, the application will be up and running! No need to install or configure
 anything on your machine!
 
 Simply open to [http://localhost](http://localhost) to see the app up and running!
+
+The development database uses MySQL 8.4. Do not start it against a
+`todo-mysql-data` volume initialized by MySQL 9.3: an in-place downgrade is not
+supported. Keep the existing volume intact and use a separate, fresh volume
+for 8.4. If you need the existing data, back it up and verify a compatible
+logical migration before switching versions.
 
 Any changes made to either the backend or frontend should be seen immediately
 without needing to rebuild or restart the containers.

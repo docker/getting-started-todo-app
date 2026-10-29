@@ -1,0 +1,17 @@
+FROM node:22 AS base
+WORKDIR /usr/local/app
+
+FROM base AS sqlite3-build
+COPY backend/package.json backend/package-lock.json ./
+COPY .npmrc .
+RUN npm ci && cd node_modules/sqlite3 && ../.bin/node-gyp rebuild
+
+FROM base AS backend-dev
+COPY backend/package.json backend/package-lock.json ./
+COPY .npmrc .
+RUN npm ci
+COPY --from=sqlite3-build /usr/local/app/node_modules/sqlite3/build \
+    ./node_modules/sqlite3/build
+COPY backend/spec ./spec
+COPY backend/src ./src
+CMD ["npm", "run", "dev"]
