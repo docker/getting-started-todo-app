@@ -1,0 +1,13 @@
+FROM node:22 AS base
+WORKDIR /usr/local/app
+
+FROM base AS client-base
+COPY client/package.json client/package-lock.json ./
+COPY .npmrc .
+RUN npm ci
+COPY client/.eslintrc.cjs client/index.html client/vite.config.js ./
+COPY client/public ./public
+COPY client/src ./src
+
+FROM client-base AS client-dev
+CMD ["npm", "run", "dev"]

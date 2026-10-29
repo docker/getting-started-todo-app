@@ -50,7 +50,7 @@ services:
   # 
   # This service is the Node.js server that provides the API for the app.
   # When the container starts, it will use the image that results
-  # from building the Dockerfile, targeting the backend-dev stage.
+  # from building Dockerfile.backend-dev.
   #
   # The Compose Watch configuration is used to automatically sync the code
   # from the host machine to the container. This allows the server to be
@@ -68,7 +68,7 @@ services:
   backend:
     build:
       context: ./
-      target: backend-dev
+      dockerfile: Dockerfile.backend-dev
     environment:
       MYSQL_HOST: mysql
       MYSQL_USER: root
@@ -93,7 +93,7 @@ services:
   #
   # The client service is the React app that provides the frontend for the app.
   # When the container starts, it will use the image that results from building
-  # the Dockerfile, targeting the dev stage.
+  # Dockerfile.client-dev.
   #
   # The Compose Watch configuration is used to automatically sync the code from
   # the host machine to the container. This allows the client to be automatically
@@ -106,7 +106,7 @@ services:
   client:
     build:
       context: ./
-      target: client-dev
+      dockerfile: Dockerfile.client-dev
     develop:
       watch:
         - path: ./client/src
@@ -136,7 +136,7 @@ services:
   # ok to hard-code them here.
   ###################################################
   mysql:
-    image: mysql:9.3
+    image: mysql:8.4
     volumes:
       - todo-mysql-data:/var/lib/mysql
     environment: 
