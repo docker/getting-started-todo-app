@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      containers:
+        - name: todo-app
+          image: ghcr.io/pabasarameegahakumbura/todo-app--leraning:0cd6962dfb62460859ab92428b73d76cd3a46611
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+            - name: todo-storage
+              mountPath: /etc/todos
+
+      volumes:
+        - name: todo-storage
+          persistentVolumeClaim:
+            claimName: todo-data
