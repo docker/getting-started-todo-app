@@ -1,4 +1,4 @@
-name: Test and build
+name: Test, build and publish
 
 on:
   push:
@@ -8,12 +8,30 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Download repository
         uses: actions/checkout@v6
 
+      - name: Set image name
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+
       - name: Test and build final image
-        run: docker build --target final --progress=plain -t todo-learning:ci .
+        run: docker build --target final -t "$IMAGE:$GITHUB_SHA" .
+
+      - name: Log in to GHCR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+
+      - name: Publish image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          docker push "$IMAGE:$GITHUB_SHA"
