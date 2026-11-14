@@ -1,4 +1,4 @@
-const GREETING = 'Hello from my DevOps learning app!';
+const GREETING = 'Hello from version 2 on Kubernetes!';
 
 module.exports = async (req, res) => {
     res.send({
