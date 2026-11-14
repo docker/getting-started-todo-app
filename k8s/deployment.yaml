@@ -22,6 +22,26 @@ spec:
           volumeMounts:
             - name: todo-storage
               mountPath: /etc/todos
+          startupProbe:
+            httpGet:
+              path: /api/greeting
+              port: 3000
+            periodSeconds: 5
+            failureThreshold: 30
+
+          readinessProbe:
+            httpGet:
+              path: /api/greeting
+              port: 3000
+            periodSeconds: 5
+            failureThreshold: 3
+
+          livenessProbe:
+            httpGet:
+              path: /api/greeting
+              port: 3000
+            periodSeconds: 10
+            failureThreshold: 3
 
       volumes:
         - name: todo-storage
