@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Download repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Test and build final image
         run: docker build --target final --progress=plain -t todo-learning:ci .
