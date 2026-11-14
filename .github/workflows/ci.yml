@@ -35,3 +35,6 @@ jobs:
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           docker push "$IMAGE:$GITHUB_SHA"
+      - name: Log out of GHCR
+        if: always()
+        run: docker logout ghcr.io
