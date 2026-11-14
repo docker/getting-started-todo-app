@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: todo-app
-          image: ghcr.io/pabasarameegahakumbura/todo-app--leraning:0cd6962dfb62460859ab92428b73d76cd3a46611
+          image: ghcr.io/pabasarameegahakumbura/todo-app--leraning:7eabee25d70e0d4876415723bb3b345106c31d01
           ports:
             - containerPort: 3000
           volumeMounts:
